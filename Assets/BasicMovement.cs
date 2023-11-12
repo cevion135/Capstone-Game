@@ -7,10 +7,22 @@ public class BasicMovement : MonoBehaviour
     private float movementSpeed = 1000f;
 //     public float dashBoost = 50f;
 //     public float maxSpeed = 20f;
-    public Transform player;
-    public Rigidbody rb;
-    public BoxCollider bc;
-    public Camera cam;
+    [SerializeField] private Transform centerOfPlayer;
+    //public Transform 
+    [SerializeField] private Rigidbody rb;
+    [SerializeField] private BoxCollider bc;
+    [SerializeField] private Camera cam;
+    // private float shootingCooldown = 1f;
+    private BulletTypes bulletGenerator;
+    private float cooldown = .5f;
+    private float cd_reduction = 1f;
+    private bool canShoot = true;
+    private bool canSwitchBullets = true;
+
+    private string[] bullets = {"basic", "fast", "reflect", "spread"};
+    private float[] cooldowns = {.1f, .5f, 1f, 1f};
+    private int selectionIterator = 0;
+
     //private float distanceToCam = 10.0f;
 
 
@@ -22,16 +34,26 @@ public class BasicMovement : MonoBehaviour
     
     //public Collision lastCollision = null;
 
-    
+    // public enum bulletTypes{
+    //     basic,
+    //     fast,
+    //     reflect,
+    //     spread,
+    //     beam
+    // }
 
     void Start() {
-        rb = GetComponent<Rigidbody>();
+        
         rb.constraints = RigidbodyConstraints.FreezePositionY |
         RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezeRotationX;
         cam = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
+        BulletTypes newBullet = new BulletTypes();
+        bulletGenerator = newBullet;
+        
     }
     void FixedUpdate()
     {
+        //player.rotation.x = 90;
         trackMouse();
         if((Input.GetKey("s"))) {
                 rb.AddForce(0, 0, -movementSpeed*Time.deltaTime);
@@ -45,16 +67,16 @@ public class BasicMovement : MonoBehaviour
         if((Input.GetKey("a"))) {
                 rb.AddForce(-movementSpeed*Time.deltaTime, 0, 0);   
         }
+        if((Input.GetKey("e") && canShoot)) {
+            bulletGenerator.instantiateBullet(bullets[selectionIterator], 1f, 1f, transform, transform.rotation);
+            StartCoroutine(shootBulletCooldown());
+        }
+        if(Input.GetKey("q") && canSwitchBullets) {
+            changeBulletType();
+            StartCoroutine(changeBulletCooldown());
+        }
     }
     void trackMouse() {
-
-        // Vector3 mousePosition = cam.ScreenToWorldPoint(Input.mousePosition);
-        // Debug.Log(mousePosition);
-        // Vector3 direction = new Vector3(mousePosition.x - player.position.x, 0, mousePosition.z - player.position.y);
-        // player.rotation = Quaternion.LookRotation(direction.normalized);
-
-        // Vector3 mousePosition = Input.mousePosition;
-        // mousePosition.z - distanceToCam;
 
         //SEMI WORKING
         Ray cameraRay = cam.ScreenPointToRay(Input.mousePosition);
@@ -63,23 +85,49 @@ public class BasicMovement : MonoBehaviour
 
         if (groundPlane.Raycast(cameraRay, out rayLength)) {
             Vector3 pointToLook = cameraRay.GetPoint(rayLength);
+            Vector3 towardsMouse = pointToLook - centerOfPlayer.position;
+            towardsMouse.y = 0;
+            towardsMouse = towardsMouse.normalized;
+            Quaternion targetRotation = Quaternion.LookRotation (towardsMouse);
             Debug.DrawLine(cameraRay.origin, pointToLook, Color.blue);
-            Debug.Log("Casting Ray");
-            // transform.LookAt(new Vector3(pointToLook.x, transform.position.y, pointToLook.z));
-            player.rotation = Quaternion.LookRotation()
+            //Debug.DrawLine(centerOfPlayer.position, towardsMouse, Color.red);
+            // Debug.Log("Casting BLUE Ray: " + pointToLook);
+            // Debug.Log("Casting RED Ray: " + towardsMouse);
+            // Debug.Log("Printing Look Rotation: " + towardsMouse);
+            // Debug.Log("Printing Target Rotation: " + targetRotation);
+            centerOfPlayer.rotation = Quaternion.Slerp(centerOfPlayer.rotation, targetRotation, Time.deltaTime * 5f);
         }
+        
 
 
-
-        // Vector3 lookDirection = worldMousePosition - player.position;
-        // lookDirection.y = 0;
-        // transform.rotation = Quaternion.LookRotation(lookDirection.normalized);
-
-        // Vector3 mapMousePosition = cam.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.z));
-        // Vector3 lineToMouse =  mapMousePosition - player.position;
-        // Quaternion rotation = Quaternion.LookRotation(lineToMouse, Vector3.up);
-        // player.rotation = Quaternion.LookRotation(rotation.normalized);
-        // Debug.DrawLine(mapMousePosition, player.position, Color.red);
+        // Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        // RaycastHit hit;
+        // if (Physics.Raycast(ray, out hit)) {
+        //     Vector3 mousePosition = hit.point;
+        //     Vector3 direction = mousePosition - centerOfPlayer.position;
+        //     // direction.y = 0;
+        //     Quaternion targetRotation = Quaternion.LookRotation(direction);
+        //     centerOfPlayer.rotation = Quaternion.Slerp(centerOfPlayer.rotation, targetRotation, 1f * Time.deltaTime);
+        // }
         return;
+    }
+    IEnumerator shootBulletCooldown(){
+        canShoot = false;
+        yield return new WaitForSeconds(cooldowns[selectionIterator]*cd_reduction);
+        canShoot = true;
+    }
+    IEnumerator changeBulletCooldown(){
+        canSwitchBullets = false;
+        yield return new WaitForSeconds(1f);
+        canSwitchBullets = true;
+    }
+    void changeBulletType() {
+        if (selectionIterator == bullets.Length-1){
+            selectionIterator = 0;
+            return;
+        }
+        selectionIterator++;
+        Debug.Log("Iterator Value: " + selectionIterator + " Associating Bullet: " + bullets[selectionIterator]);
+        Debug.Log("Bullet Length: " + bullets.Length);
     }
 }

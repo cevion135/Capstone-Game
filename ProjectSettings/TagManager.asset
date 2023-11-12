@@ -6,6 +6,9 @@ TagManager:
   tags:
   - Ground
   - AltCam
+  - Bullets
+  - Map
+  - Wall
   layers:
   - Default
   - TransparentFX
