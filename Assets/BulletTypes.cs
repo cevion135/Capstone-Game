@@ -3,77 +3,70 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
+public class bulletInfo {
+    public static float[] bulletSpeeds = {10f, 20f, 10f, 8f};
+    public static float[] bulletDamages = {10f, 7f, 10f, 12f};
+    public static float[] bulletCooldowns = {.5f, .1f, 1f, 1.5f};
+    public static Vector3 last_velocity;
+    public static Dictionary<GameObject, int> collisionCounts = new Dictionary<GameObject, int>();
+    public static GameObject[] bulletPrefabs;
+    public static bool canCollide = true;
+}
 public class BulletTypes : MonoBehaviour
 {
-    private float basic_speed = 10f;
-    private float basic_damage = 10f;
-    private float basic_cooldown = .5f;
-    private bool basic_reflect = false;
-
-    private float fast_speed = 20f;
-    private float fast_damage = 7f;
-    private float fast_cooldown = .1f;
-    private bool fast_reflect = false;
-
-    private float reflect_speed = 10f;
-    private float reflect_damage = 10f;
-    private float reflect_cooldown = 1f;
-    private bool reflect_reflect = true;
-    private Vector3 last_velocity;
-    private Dictionary<GameObject, int> collisionCounts = new Dictionary<GameObject, int>();
-
-    private float spread_speed = 8f;
-    private float spread_damage = 12f;
-    private float spread_cooldown = 2f;
-    private bool spread_reflect = false;
-    private static GameObject[] bulletPrefabs;
-    private bool canCollide = true;
+    float bulletSpeed;
+    float bulletDamage;
+    bool canCollide = true;
 
     void Start(){
-        bulletPrefabs = Resources.LoadAll<GameObject>("Bullets");
+        bulletInfo.bulletPrefabs = Resources.LoadAll<GameObject>("Bullets");
     }
 
     public BulletTypes(){
 
     }
-    public BulletTypes(float speed, float damage, bool refl, GameObject prefab, Transform trans, Quaternion rot) {
-            // Debug.Log("New [" + prefab + "] Created");
+    public BulletTypes(float speed, float damage, GameObject prefab, Transform trans, Quaternion rot) {
+            this.bulletSpeed = speed;
+            this.bulletDamage = damage;
+            // Debug.Log("New [" + prefab + "] Created... This Bullets SPEED: [" + bulletSpeed + "] This Bullets DAMAGE: [" + bulletDamage + "]");
             Vector3 bulletSpawn = trans.position + trans.forward * 1.1f;
             Quaternion bulletSpawnQuat = new Quaternion(bulletSpawn.x, bulletSpawn.y, bulletSpawn.z, 0);
 
             // Loop that creates spread type bullets.
-            if(prefab == bulletPrefabs[3]) {
+            if(prefab == bulletInfo.bulletPrefabs[3]) {
                 CreateSpreadbullet(bulletSpawn, bulletSpawnQuat, prefab, trans, rot, speed);
             }
             else{
                 GameObject bullet = CreateBullet(bulletSpawn, bulletSpawnQuat, prefab, trans, rot, speed);
-                    if(prefab == bulletPrefabs[2]) {
+                    if(prefab == bulletInfo.bulletPrefabs[2]) {
                         bullet.tag = "Bullets_Reflect";
                     }
             }
     }
     void OnCollisionEnter(Collision collision) {
+        // Debug.Log("COLLISION DETECTED");
         //collision cooldown. This removes possibility of multiple registered collisions during 1 event.
         if (!canCollide) return;
         //handles reflect bullets.
         if(gameObject.tag == "Bullets_Reflect"){
             Reflect(collision);
             GameObject collidedObject = gameObject;
-            if (!collisionCounts.ContainsKey(collidedObject)){
-                collisionCounts[collidedObject] = 1;
+            if (!bulletInfo.collisionCounts.ContainsKey(collidedObject)){
+                bulletInfo.collisionCounts[collidedObject] = 1;
             } else {
-                collisionCounts[collidedObject]++;
+                bulletInfo.collisionCounts[collidedObject]++;
             }
-             if (collisionCounts[collidedObject] == 3) {
+             if (bulletInfo.collisionCounts[collidedObject] == 3) {
                 Destroy(collidedObject);
                 Debug.Log(collidedObject.name + " destroyed due to excessive collisions.");
-                collisionCounts.Remove(collidedObject); 
+                bulletInfo.collisionCounts.Remove(collidedObject); 
             }
         }   
         //handles every other bullet.
         else{
             switch(collision.gameObject.tag) {
                 case "Wall":
+                    // Debug.Log("BULLET DESTROYED");
                     Destroy(gameObject);
                     break;
                 case "Enemy":
@@ -95,19 +88,19 @@ public class BulletTypes : MonoBehaviour
             case "basic":
             //basic bullet
                 // Debug.Log("Called Successfully " + bulletPrefabs[0]);
-                BulletTypes newBasic = new BulletTypes((basic_speed*sp), (basic_damage*dm), basic_reflect, bulletPrefabs[0], trans, rotation);
+                BulletTypes newBasic = new BulletTypes((bulletInfo.bulletSpeeds[0]*sp), (bulletInfo.bulletDamages[0]*dm), bulletInfo.bulletPrefabs[0], trans, rotation);
                 break;
             case "fast":
             //fast bullet
-                BulletTypes newFast = new BulletTypes((fast_speed*sp), (fast_damage*dm), fast_reflect, bulletPrefabs[1], trans, rotation);
+                BulletTypes newFast = new BulletTypes((bulletInfo.bulletSpeeds[1]*sp), (bulletInfo.bulletDamages[1]*dm), bulletInfo.bulletPrefabs[1], trans, rotation);
                 break;
             case "reflect":
             //reflect bullet
-            BulletTypes newReflect = new BulletTypes((reflect_speed*sp), (reflect_damage*dm), reflect_reflect, bulletPrefabs[2], trans, rotation);
+            BulletTypes newReflect = new BulletTypes((bulletInfo.bulletSpeeds[2]*sp), (bulletInfo.bulletDamages[2]*dm), bulletInfo.bulletPrefabs[2], trans, rotation);
                 break;
             case "spread":
             //spread bullet
-            BulletTypes newSpread = new BulletTypes((spread_speed*sp), (spread_damage*dm), spread_reflect, bulletPrefabs[3], trans, rotation);
+            BulletTypes newSpread = new BulletTypes((bulletInfo.bulletSpeeds[3]*sp), (bulletInfo.bulletDamages[3]*dm), bulletInfo.bulletPrefabs[3], trans, rotation);
                 break;    
             default:
                 Debug.Log("Missing Bullet Type");
@@ -140,7 +133,7 @@ public class BulletTypes : MonoBehaviour
             bullet.AddComponent<BulletTypes>();
             Rb.constraints = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
             Rb.velocity = trans.forward * speed;
-            last_velocity = Rb.velocity;
+            bulletInfo.last_velocity = Rb.velocity;
             bullet.tag = "Bullets";
     
             // Gizmos.color = Color.blue;
@@ -158,10 +151,11 @@ public class BulletTypes : MonoBehaviour
         var speed = lastVelocity.magnitude;
         // Debug.Log("MAGNITUDE OF GAME OBJECT: [" + speed + "]");
         var direction = Vector3.Reflect(bulletRb.transform.forward, coll.contacts[0].normal);
-        bulletRb.velocity = direction * Mathf.Max(reflect_speed, 0f);
+        bulletRb.velocity = direction * Mathf.Max(bulletInfo.bulletSpeeds[2], 0f);
     }
     private void ResetCollisionCooldown()
     {
+        Debug.Log("Collision Cooldown Set To True!");
         canCollide = true;
     }
 }

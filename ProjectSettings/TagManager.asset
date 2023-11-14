@@ -9,6 +9,8 @@ TagManager:
   - Bullets
   - Map
   - Wall
+  - Bullets_Reflect
+  - Enemy
   layers:
   - Default
   - TransparentFX
