@@ -14,6 +14,7 @@ public class BasicMovement : MonoBehaviour
     [SerializeField] private Rigidbody rb;
     [SerializeField] private BoxCollider bc;
     [SerializeField] private Camera cam;
+    private LayerMask hitlayer;
     // private float shootingCooldown = 1f;
     private BulletTypes bulletGenerator;
     // private float cooldown = .5f;
@@ -144,9 +145,7 @@ public class BasicMovement : MonoBehaviour
             // Debug.Log("Printing Target Rotation: " + targetRotation);
             centerOfPlayer.rotation = Quaternion.Slerp(centerOfPlayer.rotation, targetRotation, Time.deltaTime * 5f);
         }
-        void trackMouse2(){
-            
-        }
+        
         
 
 
@@ -160,6 +159,22 @@ public class BasicMovement : MonoBehaviour
         //     centerOfPlayer.rotation = Quaternion.Slerp(centerOfPlayer.rotation, targetRotation, 1f * Time.deltaTime);
         // }
         return;
+    }
+    void trackMouse2(){
+        Vector3 mousePos = Input.mousePosition;
+        Ray mousecast = cam.ScreenPointToRay(Input.mousePosition);
+        Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
+        RaycastHit hit;
+        float raylength;
+        if(Physics.Raycast(mousecast, out hit, 100f)) {
+            Vector3 targetPos = new Vector3(hit.point.x, 0f, hit.point.z);
+            // Vector3 targetPos = new Vector3(0f, hit.point.y, 0f);
+            Debug.DrawLine(mousePos, targetPos, Color.green);
+            if(Vector3.Distance(targetPos, transform.position) >= .5f) {
+                var rotation = Quaternion.LookRotation(targetPos);
+                transform.rotation = Quaternion.Slerp(transform.rotation, rotation, 1f*Time.deltaTime);
+            }
+        }
     }
     IEnumerator shootBulletCooldown(){
         canShoot = false;
