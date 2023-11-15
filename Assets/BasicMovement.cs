@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class BasicMovement : MonoBehaviour
 {
-    private float movementSpeed = 1000f;
-//     public float dashBoost = 50f;
-//     public float maxSpeed = 20f;
+    [SerializeField] private float movementSpeed;
+    [SerializeField] private float decel;
+    [SerializeField] private float dashForce;
+    
+    [SerializeField] private float max_health = 100f;
     [SerializeField] private Transform centerOfPlayer;
     //public Transform 
     [SerializeField] private Rigidbody rb;
@@ -14,13 +16,14 @@ public class BasicMovement : MonoBehaviour
     [SerializeField] private Camera cam;
     // private float shootingCooldown = 1f;
     private BulletTypes bulletGenerator;
-    private float cooldown = .5f;
+    // private float cooldown = .5f;
     private float cd_reduction = 1f;
     private bool canShoot = true;
+    private bool canDash = true;
     private bool canSwitchBullets = true;
 
-    private string[] bullets = {"basic", "fast", "reflect", "spread"};
-    private float[] cooldowns = {.1f, .5f, 1f, 1f};
+
+    private float[] playerBulletCooldowns = {.1f, .5f, .65f, .8f};
     private int selectionIterator = 0;
 
     //private float distanceToCam = 10.0f;
@@ -43,7 +46,7 @@ public class BasicMovement : MonoBehaviour
     // }
 
     void Start() {
-        
+        rb.drag = 1;
         rb.constraints = RigidbodyConstraints.FreezePositionY |
         RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezeRotationX;
         cam = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
@@ -53,8 +56,46 @@ public class BasicMovement : MonoBehaviour
     }
     void FixedUpdate()
     {
-        //player.rotation.x = 90;
+        // float moveHorizontal = Input.GetAxis("Horizontal");
+        // float moveVertical = Input.GetAxis("Vertical");
+        // Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
+
+        // Vector3 acceleration = movement * movementSpeed * 1f;
+
+        // rb.AddForce(acceleration * Time.deltaTime);
+
+        // Vector3 slowingForceDirection = -rb.velocity.normalized;
+        // Vector3 slowingForceVector = decel * slowingForceDirection;
+        // rb.AddForce(slowingForceVector * Time.deltaTime);
         trackMouse();
+        movementStyle2();
+        if((Input.GetKey("e") && canShoot)) {
+            bulletGenerator.instantiateBullet(bulletInfo.bullets[selectionIterator], 1f, 1f, transform, transform.rotation);
+            StartCoroutine(shootBulletCooldown());
+        }
+        if(Input.GetKey("q") && canSwitchBullets) {
+            changeBulletType();
+            StartCoroutine(changeBulletCooldown());
+        }
+        if(Input.GetKey(KeyCode.LeftShift) && canDash) {
+            // Vector3 currentVelocity = rb.velocity;
+            dash();
+            StartCoroutine(dash());
+        }
+    }
+    IEnumerator dash(){
+        rb.drag = 2;
+        Vector3 currentVelocity = rb.velocity;
+        Debug.Log("Dashing Initiated");
+        canDash = false;
+        Vector3 dashDirection = Quaternion.Euler(0, transform.eulerAngles.y, 0) * Vector3.forward;
+        rb.AddForce(dashDirection*dashForce);
+        yield return new WaitForSeconds(1.5f);
+        canDash = true;
+        rb.drag = 1;
+    }
+    void movementStyle1() {
+        //movement by individual key inputs
         if((Input.GetKey("s"))) {
                 rb.AddForce(0, 0, -movementSpeed*Time.deltaTime);
         }
@@ -67,14 +108,20 @@ public class BasicMovement : MonoBehaviour
         if((Input.GetKey("a"))) {
                 rb.AddForce(-movementSpeed*Time.deltaTime, 0, 0);   
         }
-        if((Input.GetKey("e") && canShoot)) {
-            bulletGenerator.instantiateBullet(bullets[selectionIterator], 1f, 1f, transform, transform.rotation);
-            StartCoroutine(shootBulletCooldown());
-        }
-        if(Input.GetKey("q") && canSwitchBullets) {
-            changeBulletType();
-            StartCoroutine(changeBulletCooldown());
-        }
+    }
+    void movementStyle2(){
+        //movement by Input.GetAxis with Decelerating force.
+        float moveHorizontal = Input.GetAxis("Horizontal");
+        float moveVertical = Input.GetAxis("Vertical");
+        Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
+
+        Vector3 acceleration = movement * movementSpeed * 1f;
+
+        rb.AddForce(acceleration * Time.deltaTime);
+
+        // Vector3 slowingForceDirection = -rb.velocity.normalized;
+        // Vector3 slowingForceVector = decel * slowingForceDirection;
+        // rb.AddForce(slowingForceVector * Time.deltaTime);
     }
     void trackMouse() {
 
@@ -89,13 +136,16 @@ public class BasicMovement : MonoBehaviour
             towardsMouse.y = 0;
             towardsMouse = towardsMouse.normalized;
             Quaternion targetRotation = Quaternion.LookRotation (towardsMouse);
-            Debug.DrawLine(cameraRay.origin, pointToLook, Color.blue);
-            //Debug.DrawLine(centerOfPlayer.position, towardsMouse, Color.red);
+            // Debug.DrawLine(cameraRay.origin, pointToLook, Color.blue);
+            // Debug.DrawLine(centerOfPlayer.position, towardsMouse, Color.red);
             // Debug.Log("Casting BLUE Ray: " + pointToLook);
             // Debug.Log("Casting RED Ray: " + towardsMouse);
             // Debug.Log("Printing Look Rotation: " + towardsMouse);
             // Debug.Log("Printing Target Rotation: " + targetRotation);
             centerOfPlayer.rotation = Quaternion.Slerp(centerOfPlayer.rotation, targetRotation, Time.deltaTime * 5f);
+        }
+        void trackMouse2(){
+            
         }
         
 
@@ -113,7 +163,7 @@ public class BasicMovement : MonoBehaviour
     }
     IEnumerator shootBulletCooldown(){
         canShoot = false;
-        yield return new WaitForSeconds(cooldowns[selectionIterator]*cd_reduction);
+        yield return new WaitForSeconds(playerBulletCooldowns[selectionIterator]*cd_reduction);
         canShoot = true;
     }
     IEnumerator changeBulletCooldown(){
@@ -122,12 +172,12 @@ public class BasicMovement : MonoBehaviour
         canSwitchBullets = true;
     }
     void changeBulletType() {
-        if (selectionIterator == bullets.Length-1){
+        if (selectionIterator == bulletInfo.bullets.Length-1){
             selectionIterator = 0;
             return;
         }
         selectionIterator++;
-        Debug.Log("Iterator Value: " + selectionIterator + " Associating Bullet: " + bullets[selectionIterator]);
-        Debug.Log("Bullet Length: " + bullets.Length);
+        Debug.Log("Bullet Type #" + selectionIterator + " Associating Bullet: " + bulletInfo.bullets[selectionIterator]);
+        // Debug.Log("Bullet Length: " + bullets.Length);
     }
 }

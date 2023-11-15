@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEditor;
 
 public class bulletInfo {
+    public static string[] bullets = {"basic", "fast", "reflect", "spread"};
     public static float[] bulletSpeeds = {10f, 20f, 10f, 8f};
     public static float[] bulletDamages = {10f, 7f, 10f, 12f};
     public static float[] bulletCooldowns = {.5f, .1f, 1f, 1.5f};
@@ -71,6 +72,9 @@ public class BulletTypes : MonoBehaviour
                     break;
                 case "Enemy":
                     //inflict damage then...
+                    Destroy(gameObject);
+                    break;
+                case "Player":
                     Destroy(gameObject);
                     break;
             }
