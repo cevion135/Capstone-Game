@@ -44,13 +44,52 @@ public class BulletTypes : MonoBehaviour
                     }
             }
     }
-    void OnCollisionEnter(Collision collision) {
-        // Debug.Log("COLLISION DETECTED");
+    // void OnCollisionEnter(Collision collision) {
+    //     // Debug.Log("COLLISION DETECTED");
+    //     //collision cooldown. This removes possibility of multiple registered collisions during 1 event.
+    //     if (!canCollide) return;
+    //     //handles reflect bullets.
+    //     if(gameObject.tag == "Bullets_Reflect"){
+    //         Reflect(collision);
+    //         GameObject collidedObject = gameObject;
+    //         if (!bulletInfo.collisionCounts.ContainsKey(collidedObject)){
+    //             bulletInfo.collisionCounts[collidedObject] = 1;
+    //         } else {
+    //             bulletInfo.collisionCounts[collidedObject]++;
+    //         }
+    //          if (bulletInfo.collisionCounts[collidedObject] == 3) {
+    //             Destroy(collidedObject);
+    //             Debug.Log(collidedObject.name + " destroyed due to excessive collisions.");
+    //             bulletInfo.collisionCounts.Remove(collidedObject); 
+    //         }
+    //     }   
+    //     //handles every other bullet.
+    //     else{
+    //         switch(collision.gameObject.tag) {
+    //             case "Wall":
+    //                 // Debug.Log("BULLET DESTROYED");
+    //                 Destroy(gameObject);
+    //                 break;
+    //             case "Enemy":
+    //                 //inflict damage then...
+    //                 Destroy(gameObject);
+    //                 break;
+    //             case "Player":
+    //                 Destroy(gameObject);
+    //                 break;
+    //         }
+    //     }
+    //     canCollide = false;
+    //     Invoke("ResetCollisionCooldown", 0.1f);
+    // }
+        void OnTriggerEnter(Collider collision) {
         //collision cooldown. This removes possibility of multiple registered collisions during 1 event.
         if (!canCollide) return;
         //handles reflect bullets.
-        if(gameObject.tag == "Bullets_Reflect"){
-            Reflect(collision);
+        // Debug.Log(collision.tag + " At position: " + collision.transform.position);
+        if(gameObject.tag == "Bullets_Reflect" && collision.gameObject.tag == "Wall"){
+            Vector3 reflectionDirection = calcReflDir(gameObject.transform.position, collision.transform.forward);
+            Reflect2(reflectionDirection);
             GameObject collidedObject = gameObject;
             if (!bulletInfo.collisionCounts.ContainsKey(collidedObject)){
                 bulletInfo.collisionCounts[collidedObject] = 1;
@@ -115,7 +154,8 @@ public class BulletTypes : MonoBehaviour
     private GameObject CreateBullet(Vector3 bulletSpawn, Quaternion bulletSpawnQuat, GameObject prefab, Transform trans, Quaternion rot, float speed){
         GameObject bullet = Instantiate(prefab, bulletSpawn, rot);
             Rigidbody Rb = bullet.AddComponent<Rigidbody>();
-            SphereCollider sc = bullet.AddComponent<SphereCollider>();
+            SphereCollider sc = bullet.GetComponent<SphereCollider>();
+            sc.isTrigger = true;
             bullet.AddComponent<BulletTypes>();
             Rb.constraints = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
             Rb.velocity = trans.forward * speed;
@@ -133,7 +173,8 @@ public class BulletTypes : MonoBehaviour
         for(int i = 0; i <= 2; i++) {
             GameObject bullet = Instantiate(prefab, bulletSpawn, bulletAngle[i]);
             Rigidbody Rb = bullet.AddComponent<Rigidbody>();
-            SphereCollider sc = bullet.AddComponent<SphereCollider>();
+            SphereCollider sc = bullet.GetComponent<SphereCollider>();
+            sc.isTrigger = true;
             bullet.AddComponent<BulletTypes>();
             Rb.constraints = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
             Rb.velocity = trans.forward * speed;
@@ -146,7 +187,7 @@ public class BulletTypes : MonoBehaviour
         }
     }
     //Math function for bullet reflections upon collision
-    void Reflect(Collision coll){
+    void Reflect(Collider coll){
         Debug.Log("HIT OBJECT");
         Rigidbody bulletRb = gameObject.GetComponent<Rigidbody>();
         // Debug.Log("RIGID BODY OF GAME OBJECT: [" + otherRigidbody + "]");
@@ -154,12 +195,24 @@ public class BulletTypes : MonoBehaviour
         // Debug.Log("VELOCITY OF GAME OBJECT: [" + lastVelocity + "]");
         var speed = lastVelocity.magnitude;
         // Debug.Log("MAGNITUDE OF GAME OBJECT: [" + speed + "]");
-        var direction = Vector3.Reflect(bulletRb.transform.forward, coll.contacts[0].normal);
-        bulletRb.velocity = direction * Mathf.Max(bulletInfo.bulletSpeeds[2], 0f);
+        // var direction = Vector3.Reflect(bulletRb.transform.forward, coll.contacts[0].normal);
+        // bulletRb.velocity = direction * Mathf.Max(bulletInfo.bulletSpeeds[2], 0f);
+    }
+    void Reflect2(Vector3 direction) {
+        transform.forward = direction;
+        Rigidbody rb = gameObject.GetComponent<Rigidbody>();
+        rb.velocity = direction * bulletInfo.bulletSpeeds[2];
+        // gameObject.GetComponent<Rigidbody>.velocity = direction * bulletInfo.bulletSpeeds[2];
+    }
+    //Calculates the reflection direction of a bullet.
+    Vector3 calcReflDir(Vector3 bulletPosition, Vector3 surfacePosition){
+        Vector3 incidentDirection = transform.forward;
+        Vector3 reflectionDirection = Vector3.Reflect(incidentDirection, surfacePosition);
+        return reflectionDirection.normalized;
     }
     private void ResetCollisionCooldown()
     {
-        Debug.Log("Collision Cooldown Set To True!");
+        // Debug.Log("Collision Cooldown Set To True!");
         canCollide = true;
     }
 }

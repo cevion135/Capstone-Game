@@ -355,6 +355,7 @@
 "Assets/BulletTypes.cs"
 "Assets/CameraController.cs"
 "Assets/EnemyController.cs"
+"Assets/EnemySpawner.cs"
 -langversion:9.0
 
 /deterministic

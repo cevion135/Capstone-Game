@@ -24,7 +24,7 @@ public class BasicMovement : MonoBehaviour
     private bool canSwitchBullets = true;
 
 
-    private float[] playerBulletCooldowns = {.1f, .5f, .65f, .8f};
+    private float[] playerBulletCooldowns = {.1f, .5f, .3f, .8f};
     private int selectionIterator = 0;
 
     //private float distanceToCam = 10.0f;
@@ -68,7 +68,7 @@ public class BasicMovement : MonoBehaviour
         // Vector3 slowingForceDirection = -rb.velocity.normalized;
         // Vector3 slowingForceVector = decel * slowingForceDirection;
         // rb.AddForce(slowingForceVector * Time.deltaTime);
-        trackMouse();
+        trackMouse2();
         movementStyle2();
         if((Input.GetKey("e") && canShoot)) {
             bulletGenerator.instantiateBullet(bulletInfo.bullets[selectionIterator], 1f, 1f, transform, transform.rotation);
@@ -161,20 +161,15 @@ public class BasicMovement : MonoBehaviour
         return;
     }
     void trackMouse2(){
-        Vector3 mousePos = Input.mousePosition;
-        Ray mousecast = cam.ScreenPointToRay(Input.mousePosition);
-        Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
-        RaycastHit hit;
-        float raylength;
-        if(Physics.Raycast(mousecast, out hit, 100f)) {
-            Vector3 targetPos = new Vector3(hit.point.x, 0f, hit.point.z);
-            // Vector3 targetPos = new Vector3(0f, hit.point.y, 0f);
-            Debug.DrawLine(mousePos, targetPos, Color.green);
-            if(Vector3.Distance(targetPos, transform.position) >= .5f) {
-                var rotation = Quaternion.LookRotation(targetPos);
-                transform.rotation = Quaternion.Slerp(transform.rotation, rotation, 1f*Time.deltaTime);
-            }
+       Ray camRay = cam.ScreenPointToRay(Input.mousePosition);
+       Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
+        float rayLength;
+        Vector3 pointDir = Vector3.zero;
+
+        if(groundPlane.Raycast(camRay, out rayLength)) {
+            pointDir = camRay.GetPoint(rayLength);
         }
+        transform.LookAt(new Vector3(pointDir.x, transform.position.y, pointDir.z));
     }
     IEnumerator shootBulletCooldown(){
         canShoot = false;

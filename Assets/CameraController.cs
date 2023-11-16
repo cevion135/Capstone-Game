@@ -23,7 +23,7 @@ public class CameraController : MonoBehaviour
     void LateUpdate()
     {
         enemies = GameObject.FindGameObjectsWithTag("Enemy");
-        print(enemies.Length);
+        // print(enemies.Length);
         if(enemies.Length == 0) {
             followPlayer();
         }
