@@ -178,7 +178,7 @@ public class BasicMovement : MonoBehaviour
     }
     IEnumerator changeBulletCooldown(){
         canSwitchBullets = false;
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(.3f);
         canSwitchBullets = true;
     }
     void changeBulletType() {

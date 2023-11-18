@@ -1,38 +1,49 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
+/* This is the enemy spawner script.
+Functions here are intended to be called by
+the game manager script*/
+
 public class EnemyTypes {
-    private string[] enemyTypes = {"basic", "rotator", "revolver"};
-    private float[] movementSpeeds = {5f, 0f, 10f};
-    private float[] max_healths = {100f, 200f, 70f};
+    public static string[] enemyTypes = {"basic", "rotator", "revolver"};
+    public static float[] movementSpeeds = {5f, 0f, 10f};
+    public static float[] max_healths = {100f, 200f, 70f};
     public static GameObject[] enemyPrefabs;
     
 }
 public class EnemySpawner : MonoBehaviour
 {
-    string enemyType;
-    float enemySpeed;
-    float enemyMaxHealth;
-    float enemyCurrentHealth;
-    GameObject enemyPrefab;
-    public EnemySpawner(string type, float speed, float max_health, GameObject prefab){
+    public string enemyType;
+    public float enemySpeed;
+    public float enemyMaxHealth;
+    public float enemyCurrentHealth;
+    public GameObject enemyPrefab;
+    public EnemySpawner(string type, float speed, float max_health, GameObject prefab, Vector3 position){
         enemyType = type;
         enemySpeed = speed;
         enemyMaxHealth = max_health;
         enemyPrefab = prefab;
-        //GameObject [Blank].Instantiate(prefab, spawnpoint, rotation);
-        //[Blank].AddComponent<EnemyController>();
-        //[Blank].tag = "enemy;
+        GameObject enemy = Instantiate(prefab, position, Quaternion.identity);
+        enemy.AddComponent<EnemyController>();
+        enemy.tag = "enemy";
 
     }
     void Start()
     {
         
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+    void createBasicEnemy(Vector3 position){
+        EnemySpawner enemy = new EnemySpawner(EnemyTypes.enemyTypes[0], EnemyTypes.movementSpeeds[0],
+        EnemyTypes.max_healths[0], EnemyTypes.enemyPrefabs[0], position);
+    }
+    void createRotatorEnemy(Vector3 position){
+        EnemySpawner enemy = new EnemySpawner(EnemyTypes.enemyTypes[1], EnemyTypes.movementSpeeds[1],
+        EnemyTypes.max_healths[1], EnemyTypes.enemyPrefabs[1], position);
+    }
+    void createRevolverEnemy(Vector3 position){
+        EnemySpawner enemy = new EnemySpawner(EnemyTypes.enemyTypes[2], EnemyTypes.movementSpeeds[2],
+        EnemyTypes.max_healths[2], EnemyTypes.enemyPrefabs[2], position);
     }
 }

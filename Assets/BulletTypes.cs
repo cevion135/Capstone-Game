@@ -44,44 +44,6 @@ public class BulletTypes : MonoBehaviour
                     }
             }
     }
-    // void OnCollisionEnter(Collision collision) {
-    //     // Debug.Log("COLLISION DETECTED");
-    //     //collision cooldown. This removes possibility of multiple registered collisions during 1 event.
-    //     if (!canCollide) return;
-    //     //handles reflect bullets.
-    //     if(gameObject.tag == "Bullets_Reflect"){
-    //         Reflect(collision);
-    //         GameObject collidedObject = gameObject;
-    //         if (!bulletInfo.collisionCounts.ContainsKey(collidedObject)){
-    //             bulletInfo.collisionCounts[collidedObject] = 1;
-    //         } else {
-    //             bulletInfo.collisionCounts[collidedObject]++;
-    //         }
-    //          if (bulletInfo.collisionCounts[collidedObject] == 3) {
-    //             Destroy(collidedObject);
-    //             Debug.Log(collidedObject.name + " destroyed due to excessive collisions.");
-    //             bulletInfo.collisionCounts.Remove(collidedObject); 
-    //         }
-    //     }   
-    //     //handles every other bullet.
-    //     else{
-    //         switch(collision.gameObject.tag) {
-    //             case "Wall":
-    //                 // Debug.Log("BULLET DESTROYED");
-    //                 Destroy(gameObject);
-    //                 break;
-    //             case "Enemy":
-    //                 //inflict damage then...
-    //                 Destroy(gameObject);
-    //                 break;
-    //             case "Player":
-    //                 Destroy(gameObject);
-    //                 break;
-    //         }
-    //     }
-    //     canCollide = false;
-    //     Invoke("ResetCollisionCooldown", 0.1f);
-    // }
         void OnTriggerEnter(Collider collision) {
         //collision cooldown. This removes possibility of multiple registered collisions during 1 event.
         if (!canCollide) return;
@@ -158,32 +120,30 @@ public class BulletTypes : MonoBehaviour
             sc.isTrigger = true;
             bullet.AddComponent<BulletTypes>();
             Rb.constraints = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
-            Rb.velocity = trans.forward * speed;
+            Rb.velocity = bullet.transform.forward * speed;
+            Debug.DrawLine(bullet.transform.position, bullet.transform.forward * 3f);
             bullet.tag = "Bullets";
             return bullet;
     }
     //Function that creates 3 bullets and shoots them at [blank] degree angle relative to forward vector. also adds appropriate components.
     private void CreateSpreadbullet(Vector3 bulletSpawn, Quaternion bulletSpawnQuat, GameObject prefab, Transform trans, Quaternion rot, float speed){
-        float angle = 60f;
-        Quaternion rotation1 = Quaternion.Euler(0f, angle, 0f);
-        Quaternion rotation2 = Quaternion.Euler(0f, -angle, 0f);
-        Quaternion rotVectLeft = rotation1 * bulletSpawnQuat;
-        Quaternion rotVectRight = rotation2 * bulletSpawnQuat;
+        
+        float angle = 30f;
+        Quaternion rotVectLeft = rot * Quaternion.Euler(0f, angle, 0f);
+        Quaternion rotVectRight = rot * Quaternion.Euler(0f, -angle, 0f);
+
         Quaternion[] bulletAngle = {rotVectLeft, rot, rotVectRight};
         for(int i = 0; i <= 2; i++) {
             GameObject bullet = Instantiate(prefab, bulletSpawn, bulletAngle[i]);
+            Debug.Log("Bullet rotation: " + bullet.transform.rotation);
             Rigidbody Rb = bullet.AddComponent<Rigidbody>();
             SphereCollider sc = bullet.GetComponent<SphereCollider>();
             sc.isTrigger = true;
             bullet.AddComponent<BulletTypes>();
             Rb.constraints = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
-            Rb.velocity = trans.forward * speed;
+            Rb.velocity = bullet.transform.forward * speed;
             bulletInfo.last_velocity = Rb.velocity;
             bullet.tag = "Bullets";
-    
-            // Gizmos.color = Color.blue;
-            //  Gizmos.DrawLine(transform.position, transform.position + transform.forward * lineLength);
-            // Time.timeScale = .2f;
         }
     }
     //Math function for bullet reflections upon collision
@@ -195,8 +155,6 @@ public class BulletTypes : MonoBehaviour
         // Debug.Log("VELOCITY OF GAME OBJECT: [" + lastVelocity + "]");
         var speed = lastVelocity.magnitude;
         // Debug.Log("MAGNITUDE OF GAME OBJECT: [" + speed + "]");
-        // var direction = Vector3.Reflect(bulletRb.transform.forward, coll.contacts[0].normal);
-        // bulletRb.velocity = direction * Mathf.Max(bulletInfo.bulletSpeeds[2], 0f);
     }
     void Reflect2(Vector3 direction) {
         transform.forward = direction;
