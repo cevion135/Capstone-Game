@@ -8,7 +8,8 @@ public class BasicMovement : MonoBehaviour
     [SerializeField] private float decel;
     [SerializeField] private float dashForce;
     
-    [SerializeField] private float max_health = 100f;
+    [SerializeField] public static float max_health = 100f;
+    [SerializeField] public static float curr_health;
     [SerializeField] private Transform centerOfPlayer;
     //public Transform 
     [SerializeField] private Rigidbody rb;
@@ -22,10 +23,12 @@ public class BasicMovement : MonoBehaviour
     private bool canShoot = true;
     private bool canDash = true;
     private bool canSwitchBullets = true;
+    private bool canTakeDamage = true;
 
 
     private float[] playerBulletCooldowns = {.1f, .5f, .3f, .8f};
     private int selectionIterator = 0;
+    [SerializeField] public MeshRenderer meshRenderer;
 
     //private float distanceToCam = 10.0f;
 
@@ -53,23 +56,16 @@ public class BasicMovement : MonoBehaviour
         cam = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
         BulletTypes newBullet = new BulletTypes();
         bulletGenerator = newBullet;
+        curr_health = max_health;
+        Transform child = transform.Find("Player");
+        meshRenderer = child.GetComponent<MeshRenderer>();
         
     }
     void FixedUpdate()
     {
-        // float moveHorizontal = Input.GetAxis("Horizontal");
-        // float moveVertical = Input.GetAxis("Vertical");
-        // Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
-
-        // Vector3 acceleration = movement * movementSpeed * 1f;
-
-        // rb.AddForce(acceleration * Time.deltaTime);
-
-        // Vector3 slowingForceDirection = -rb.velocity.normalized;
-        // Vector3 slowingForceVector = decel * slowingForceDirection;
-        // rb.AddForce(slowingForceVector * Time.deltaTime);
-        trackMouse2();
-        movementStyle2();
+    
+        trackMouse();
+        movementStyle();
         if((Input.GetKey("e") && canShoot)) {
             bulletGenerator.instantiateBullet(bulletInfo.bullets[selectionIterator], 1f, 1f, transform, transform.rotation);
             StartCoroutine(shootBulletCooldown());
@@ -85,6 +81,7 @@ public class BasicMovement : MonoBehaviour
         }
     }
     IEnumerator dash(){
+        StartCoroutine(dashMeshRenderer());
         rb.drag = 2;
         Vector3 currentVelocity = rb.velocity;
         Debug.Log("Dashing Initiated");
@@ -95,22 +92,29 @@ public class BasicMovement : MonoBehaviour
         canDash = true;
         rb.drag = 1;
     }
-    void movementStyle1() {
-        //movement by individual key inputs
-        if((Input.GetKey("s"))) {
-                rb.AddForce(0, 0, -movementSpeed*Time.deltaTime);
-        }
-        if((Input.GetKey("d"))) {
-                rb.AddForce(movementSpeed*Time.deltaTime, 0, 0);     
-        }    
-        if((Input.GetKey("w"))) {
-                rb.AddForce(0, 0, movementSpeed*Time.deltaTime);
-        }
-        if((Input.GetKey("a"))) {
-                rb.AddForce(-movementSpeed*Time.deltaTime, 0, 0);   
-        }
+    IEnumerator dashMeshRenderer(){
+        yield return new WaitForSeconds(.03f);
+        meshRenderer.enabled = false;
+        yield return new WaitForSeconds(.1f);
+        meshRenderer.enabled = true;
+
     }
-    void movementStyle2(){
+    // void movementStyle1() {
+    //     //movement by individual key inputs
+    //     if((Input.GetKey("s"))) {
+    //             rb.AddForce(0, 0, -movementSpeed*Time.deltaTime);
+    //     }
+    //     if((Input.GetKey("d"))) {
+    //             rb.AddForce(movementSpeed*Time.deltaTime, 0, 0);     
+    //     }    
+    //     if((Input.GetKey("w"))) {
+    //             rb.AddForce(0, 0, movementSpeed*Time.deltaTime);
+    //     }
+    //     if((Input.GetKey("a"))) {
+    //             rb.AddForce(-movementSpeed*Time.deltaTime, 0, 0);   
+    //     }
+    // }
+    void movementStyle(){
         //movement by Input.GetAxis with Decelerating force.
         float moveHorizontal = Input.GetAxis("Horizontal");
         float moveVertical = Input.GetAxis("Vertical");
@@ -119,32 +123,28 @@ public class BasicMovement : MonoBehaviour
         Vector3 acceleration = movement * movementSpeed * 1f;
 
         rb.AddForce(acceleration * Time.deltaTime);
-
-        // Vector3 slowingForceDirection = -rb.velocity.normalized;
-        // Vector3 slowingForceVector = decel * slowingForceDirection;
-        // rb.AddForce(slowingForceVector * Time.deltaTime);
     }
-    void trackMouse() {
+    // void trackMouse() {
 
         //SEMI WORKING
-        Ray cameraRay = cam.ScreenPointToRay(Input.mousePosition);
-        Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
-        float rayLength;
+        // Ray cameraRay = cam.ScreenPointToRay(Input.mousePosition);
+        // Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
+        // float rayLength;
 
-        if (groundPlane.Raycast(cameraRay, out rayLength)) {
-            Vector3 pointToLook = cameraRay.GetPoint(rayLength);
-            Vector3 towardsMouse = pointToLook - centerOfPlayer.position;
-            towardsMouse.y = 0;
-            towardsMouse = towardsMouse.normalized;
-            Quaternion targetRotation = Quaternion.LookRotation (towardsMouse);
+        // if (groundPlane.Raycast(cameraRay, out rayLength)) {
+            // Vector3 pointToLook = cameraRay.GetPoint(rayLength);
+            // Vector3 towardsMouse = pointToLook - centerOfPlayer.position;
+            // towardsMouse.y = 0;
+            // towardsMouse = towardsMouse.normalized;
+            // Quaternion targetRotation = Quaternion.LookRotation (towardsMouse);
             // Debug.DrawLine(cameraRay.origin, pointToLook, Color.blue);
             // Debug.DrawLine(centerOfPlayer.position, towardsMouse, Color.red);
             // Debug.Log("Casting BLUE Ray: " + pointToLook);
             // Debug.Log("Casting RED Ray: " + towardsMouse);
             // Debug.Log("Printing Look Rotation: " + towardsMouse);
             // Debug.Log("Printing Target Rotation: " + targetRotation);
-            centerOfPlayer.rotation = Quaternion.Slerp(centerOfPlayer.rotation, targetRotation, Time.deltaTime * 5f);
-        }
+            // centerOfPlayer.rotation = Quaternion.Slerp(centerOfPlayer.rotation, targetRotation, Time.deltaTime * 5f);
+        // }
         
         
 
@@ -158,9 +158,9 @@ public class BasicMovement : MonoBehaviour
         //     Quaternion targetRotation = Quaternion.LookRotation(direction);
         //     centerOfPlayer.rotation = Quaternion.Slerp(centerOfPlayer.rotation, targetRotation, 1f * Time.deltaTime);
         // }
-        return;
-    }
-    void trackMouse2(){
+        // return;
+    // }
+    void trackMouse(){
        Ray camRay = cam.ScreenPointToRay(Input.mousePosition);
        Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
         float rayLength;
@@ -171,16 +171,40 @@ public class BasicMovement : MonoBehaviour
         }
         transform.LookAt(new Vector3(pointDir.x, transform.position.y, pointDir.z));
     }
+     void OnTriggerEnter(Collider collision) {
+        //if an enemy detects a collision with a bullet, inflict damage by subtracting class info.
+        if((collision.CompareTag("Bullets") || collision.CompareTag ("Bullets_Reflect")) && canTakeDamage) {
+            // print("Bullet Damage [Before]: " + collision.gameObject.GetComponent<bulletAttributes>().bulletDamage);
+            // print("Current Health [Before]: " + gameObject.GetComponent<EnemyAttributes>().enemyCurrentHealth);
+            curr_health -= collision.gameObject.GetComponent<bulletAttributes>().bulletDamage;
+            // print("Bullet Damage [After]: " + collision.gameObject.GetComponent<bulletAttributes>().bulletDamage);
+            print("[Damage Inflicted on Player] New Health: " + curr_health);
+            if(curr_health <= 0) {
+                Destroy(gameObject);
+            }
+            StartCoroutine(takeDamageCooldown());
+        }
+    }
+    //places x amount of cooldown time for each individual bullet.
     IEnumerator shootBulletCooldown(){
         canShoot = false;
         yield return new WaitForSeconds(playerBulletCooldowns[selectionIterator]*cd_reduction);
         canShoot = true;
     }
+     //cooldown to prevent from switching bullet types too fast.
     IEnumerator changeBulletCooldown(){
         canSwitchBullets = false;
         yield return new WaitForSeconds(.3f);
         canSwitchBullets = true;
     }
+    IEnumerator takeDamageCooldown(){
+        canTakeDamage = false;
+        meshRenderer.enabled = false;
+        yield return new WaitForSeconds(.1f);
+        meshRenderer.enabled = true;
+        canTakeDamage = true;
+    }
+    //cycles through array containing all available bullet types.
     void changeBulletType() {
         if (selectionIterator == bulletInfo.bullets.Length-1){
             selectionIterator = 0;
@@ -188,6 +212,5 @@ public class BasicMovement : MonoBehaviour
         }
         selectionIterator++;
         Debug.Log("Bullet Type #" + selectionIterator + " Associating Bullet: " + bulletInfo.bullets[selectionIterator]);
-        // Debug.Log("Bullet Length: " + bullets.Length);
     }
 }

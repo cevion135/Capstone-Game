@@ -22,13 +22,15 @@ public class CameraController : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
-        enemies = GameObject.FindGameObjectsWithTag("Enemy");
-        // print(enemies.Length);
-        if(enemies.Length == 0) {
-            followPlayer();
-        }
-        if(enemies.Length != 0) {
-            trackPlayerAndTargets();
+        if(player) {
+            enemies = GameObject.FindGameObjectsWithTag("Enemy");
+            // print(enemies.Length);
+            if(enemies.Length == 0) {
+                followPlayer();
+            }
+            if(enemies.Length != 0) {
+                trackPlayerAndTargets();
+            }
         }
     }
     void followPlayer() {

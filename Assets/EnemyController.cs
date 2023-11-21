@@ -2,42 +2,51 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//This script is attached to all enemies and outlines how they are to behave.
 public class EnemyController : MonoBehaviour
 {
+    [Header("GameObject Components")]
+    [SerializeField]private BulletTypes bulletGenerator;
     [SerializeField] private Transform playerTransform;
-    [SerializeField] private float radOfSatis;
-    [SerializeField] private float playerRadOfSatis;
-    private BulletTypes bulletGenerator;
-    private float moveSpeed = 5f;
-    private float revolutionSpeed = 10f;
-    private bool canShoot = true;
+    [Header("Movement Information")]
+    [SerializeField] private float radOfSatis = 15f;
+    [SerializeField] private float playerRadOfSatis = 8f;
+    [SerializeField] private float speedAndDir = 40f;
+    [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private float revolutionSpeed = 10f;
+    [Header("Cooldown Information")]
+    [SerializeField] private bool canShoot = true;
+    [SerializeField] private bool canTakeDamage = true;
     [SerializeField] private bool canChangeDir = true;
-     [SerializeField] private float speedAndDir = 40f;
     
     // Start is called before the first frame update
     void Start()
     {
         BulletTypes newBullet = new BulletTypes();
         bulletGenerator = newBullet;
+        playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        // (likely unnecessary) **foreach gameobject with tag "Enemy"**
-
-        // switch(this.EnemySpawner.getEnemyType()) {
-        //     case "basic":
-        //         lookAndShoot(1); 
-        //         break;
-        //     case "rotator":
-        //         // do corresponding attack pattern.  
-        //         break;
-        //     case "revolver":
-        //         // if
-        //         break;
-        // }
+        if(playerTransform){
         chaseAndShoot(1);
+        }
+    }
+     void OnTriggerEnter(Collider collision) {
+        //if an enemy detects a collision with a bullet, inflict damage by subtracting class info.
+        if((collision.CompareTag("Bullets") || collision.CompareTag ("Bullets_Reflect")) && canTakeDamage) {
+            // print("Bullet Damage [Before]: " + collision.gameObject.GetComponent<bulletAttributes>().bulletDamage);
+            // print("Current Health [Before]: " + gameObject.GetComponent<EnemyAttributes>().enemyCurrentHealth);
+            gameObject.GetComponent<EnemyAttributes>().enemyCurrentHealth -= collision.gameObject.GetComponent<bulletAttributes>().bulletDamage;
+            // print("Bullet Damage [After]: " + collision.gameObject.GetComponent<bulletAttributes>().bulletDamage);
+            print("[Damage Inflicted on Enemy] New Health: " + gameObject.GetComponent<EnemyAttributes>().enemyCurrentHealth);
+            if(gameObject.GetComponent<EnemyAttributes>().enemyCurrentHealth <= 0) {
+                Destroy(gameObject);
+            }
+            StartCoroutine(takeDamageCooldown());
+        }
     }
     private void lookAndShoot(int bulletType){
         //Vector from Enemy to Player
@@ -78,7 +87,7 @@ public class EnemyController : MonoBehaviour
         }
     }
     private bool isInRange(int magDirection) {
-        // 0 = check if player is close enough to enemy
+        // 0 = check if player is close enough to enemy.
         if(magDirection == 0) {
             Vector3 towardsTarget = playerTransform.position - transform.position;
             // Debug.Log("mag from enemy to player: " + towardsTarget.magnitude + " Enemy rad of satis: " + radOfSatis + " Verdict: " + ((towardsTarget.magnitude >= radOfSatis) ? false : true));
@@ -113,9 +122,11 @@ public class EnemyController : MonoBehaviour
         transform.RotateAround(playerTransform.position, Vector3.up, speedAndDir * Time.deltaTime);
     }
     void OnDrawGizmos(){
-        Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(new Vector3(transform.position.x, transform.position.y, transform.position.z), radOfSatis);
-        Gizmos.DrawWireSphere(playerTransform.position, playerRadOfSatis);
+        if(playerTransform) {
+            Gizmos.color = Color.blue;
+            Gizmos.DrawWireSphere(new Vector3(transform.position.x, transform.position.y, transform.position.z), radOfSatis);
+            Gizmos.DrawWireSphere(playerTransform.position, playerRadOfSatis);
+        }
     }
     private void shoot(int bulletType){
         if(canShoot){
@@ -134,9 +145,14 @@ public class EnemyController : MonoBehaviour
         canShoot = true;
     }
     IEnumerator revolveChangeDirCooldown(bool canChangeDir){
-        Debug.Log("COOLDOWN INITIATED");
+        Debug.Log("REVOLUTION COOLDOWN INITIATED");
         yield return new WaitForSeconds(3f);
         canChangeDir = true;
+    }
+    IEnumerator takeDamageCooldown() {
+        canTakeDamage = false;
+        yield return new WaitForSeconds(.1f);
+        canTakeDamage = true;
     }
 }
 

@@ -356,6 +356,8 @@
 "Assets/CameraController.cs"
 "Assets/EnemyController.cs"
 "Assets/EnemySpawner.cs"
+"Assets/GameManager.cs"
+"Assets/HealthManager.cs"
 -langversion:9.0
 
 /deterministic
