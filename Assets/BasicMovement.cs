@@ -25,7 +25,10 @@ public class BasicMovement : MonoBehaviour
     private BulletTypes bulletGenerator;
     private float[] playerBulletCooldowns = {.1f, .5f, .2f, .35f};
 
-    //private float distanceToCam = 10.0f;
+    private float min = 5f;
+    private float max = 50f;
+    private float sensitivity = 5f;
+    public static float spreadValue;
 
 
     //public float turningDelay = 5f;
@@ -54,11 +57,11 @@ public class BasicMovement : MonoBehaviour
         curr_health = max_health;
         Transform child = transform.Find("Player");
         meshRenderer = child.GetComponent<MeshRenderer>();
-        
+        spreadValue = (min + max) / 2f;
     }
     void FixedUpdate()
     {
-    
+        
         trackMouse();
         movementStyle();
         if((Input.GetKey("e") && canShoot)) {
@@ -156,6 +159,7 @@ public class BasicMovement : MonoBehaviour
         // return;
     // }
     void trackMouse(){
+        //Section for character rotation
        Ray camRay = cam.ScreenPointToRay(Input.mousePosition);
        Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
         float rayLength;
@@ -165,6 +169,9 @@ public class BasicMovement : MonoBehaviour
             pointDir = camRay.GetPoint(rayLength);
         }
         transform.LookAt(new Vector3(pointDir.x, transform.position.y, pointDir.z));
+        //Section for tracking scroll wheel value
+        spreadValue += Input.mouseScrollDelta.y * sensitivity;
+        spreadValue = Mathf.Clamp(spreadValue, min, max);
     }
      void OnTriggerEnter(Collider collision) {
         //if an enemy detects a collision with a bullet, inflict damage by subtracting class info.

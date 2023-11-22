@@ -138,11 +138,19 @@ public class BulletTypes : MonoBehaviour
     }
     //Function that creates 3 bullets and shoots them at [blank] degree angle relative to forward vector. also adds appropriate components.
     private void CreateSpreadbullet(Vector3 bulletSpawn, Quaternion bulletSpawnQuat, GameObject prefab, Transform trans, Quaternion rot, float speed, float damage, bool whoSpawned){
-        
-        float angle = 30f;
-        Quaternion rotVectLeft = rot * Quaternion.Euler(0f, angle, 0f);
-        Quaternion rotVectRight = rot * Quaternion.Euler(0f, -angle, 0f);
-        Quaternion[] bulletAngle = {rotVectLeft, rot, rotVectRight};
+        Quaternion[] bulletAngle;
+        if(whoSpawned) {
+            Quaternion rotVectLeft = rot * Quaternion.Euler(0f, BasicMovement.spreadValue, 0f);
+            Quaternion rotVectRight = rot * Quaternion.Euler(0f, -BasicMovement.spreadValue, 0f);
+            bulletAngle = new[]  {rotVectLeft, rot, rotVectRight};
+        }
+        else {
+            float angle = 30f;
+            Quaternion rotVectLeft = rot * Quaternion.Euler(0f, angle, 0f);
+            Quaternion rotVectRight = rot * Quaternion.Euler(0f, -angle, 0f);
+            bulletAngle = new[] {rotVectLeft, rot, rotVectRight};
+           
+        }
         for(int i = 0; i <= 2; i++) {
             //setting bullet properties
             GameObject bullet = Instantiate(prefab, bulletSpawn, bulletAngle[i]);
