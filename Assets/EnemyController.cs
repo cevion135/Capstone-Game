@@ -31,7 +31,21 @@ public class EnemyController : MonoBehaviour
     void FixedUpdate()
     {
         if(playerTransform){
-        chaseAndShoot(1);
+            switch(GetComponent<EnemyAttributes>().enemyType) {
+                case "basic":
+                    lookAndShoot(3);
+                    break;
+                case "revolver":
+                    chaseAndShoot(1);
+                    break;
+                case "rotator":
+                    rotate();
+                    shoot(0);
+                    break;
+            }
+            // if(GetComponent<EnemyAttributes>().enemyType == "basic") {
+            //     chaseAndShoot(1);
+            // }
         }
     }
      void OnTriggerEnter(Collider collision) {
@@ -133,6 +147,9 @@ public class EnemyController : MonoBehaviour
             bulletGenerator.instantiateBullet(bulletInfo.bullets[bulletType], 1f, 1f, transform, transform.rotation);
             StartCoroutine(shootBulletCooldown());
         }
+    }
+    private void rotate(){  
+         transform.Rotate(Vector3.up * GetComponent<EnemyAttributes>().enemySpeed * Time.deltaTime);
     }
     private void sprayNoCooldown(int bulletType){
         if(canShoot){

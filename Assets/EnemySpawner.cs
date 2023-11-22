@@ -8,8 +8,8 @@ the game manager script*/
 
 public class EnemyTypes {
     public static string[] enemyTypes = {"basic", "revolver", "rotator"};
-    public static float[] movementSpeeds = {5f, 0f, 10f};
-    public static float[] max_healths = {100f, 200f, 20f};
+    public static float[] movementSpeeds = {5f, 10f, 180f};
+    public static float[] max_healths = {100f, 15f, 75f};
     public static GameObject[] enemyPrefabs;
     // public static List<EnemySpawner> currEnemyInstances = new List<EnemySpawner>();
 }
@@ -83,15 +83,15 @@ public class EnemySpawner : MonoBehaviour
         // SpawnEnemy(EnemyTypes.enemyTypes[0], EnemyTypes.movementSpeeds[0], EnemyTypes.max_healths[0], EnemyTypes.enemyPrefabs[0], position);
         // Debug.Log("Basic Enemy Created");
     }
-    public static void createRotatorEnemy(Vector3 position){
+    public static void createRevolverEnemy(Vector3 position){
         EnemySpawner enemy = new EnemySpawner(EnemyTypes.enemyTypes[1], EnemyTypes.movementSpeeds[1],
         EnemyTypes.max_healths[1], EnemyTypes.enemyPrefabs[1], position);
-        // SpawnEnemy(EnemyTypes.enemyTypes[1], EnemyTypes.movementSpeeds[1], EnemyTypes.max_healths[1], EnemyTypes.enemyPrefabs[1], position);
+        // SpawnEnemy(EnemyTypes.enemyTypes[2], EnemyTypes.movementSpeeds[2], EnemyTypes.max_healths[2], EnemyTypes.enemyPrefabs[2], position);
     }
-    public static void createRevolverEnemy(Vector3 position){
+    public static void createRotatorEnemy(Vector3 position){
         EnemySpawner enemy = new EnemySpawner(EnemyTypes.enemyTypes[2], EnemyTypes.movementSpeeds[2],
         EnemyTypes.max_healths[2], EnemyTypes.enemyPrefabs[2], position);
-        // SpawnEnemy(EnemyTypes.enemyTypes[2], EnemyTypes.movementSpeeds[2], EnemyTypes.max_healths[2], EnemyTypes.enemyPrefabs[2], position);
+        // SpawnEnemy(EnemyTypes.enemyTypes[1], EnemyTypes.movementSpeeds[1], EnemyTypes.max_healths[1], EnemyTypes.enemyPrefabs[1], position);
     }
 
 

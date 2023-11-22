@@ -9,6 +9,8 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         EnemySpawner.createBasicEnemy(new Vector3(12f,.5f,12f));   
+        EnemySpawner.createRevolverEnemy(new Vector3(-15f, .5f, 10f));
+        EnemySpawner.createRotatorEnemy(new Vector3(8f, .5f, 16f));
     }
 
     // Update is called once per frame

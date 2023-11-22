@@ -26,7 +26,7 @@ public class BasicMovement : MonoBehaviour
     private bool canTakeDamage = true;
 
 
-    private float[] playerBulletCooldowns = {.1f, .5f, .3f, .8f};
+    private float[] playerBulletCooldowns = {.1f, .5f, .2f, .35f};
     private int selectionIterator = 0;
     [SerializeField] public MeshRenderer meshRenderer;
 
