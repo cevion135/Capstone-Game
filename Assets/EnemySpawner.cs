@@ -19,13 +19,6 @@ public class EnemyAttributes : MonoBehaviour{
     [SerializeField]public float enemyMaxHealth;
     [SerializeField]public float enemyCurrentHealth;
     [SerializeField]public GameObject enemyPrefab;
-    public EnemyAttributes(string type, float speed, float health, GameObject prefab) {
-        enemyType = type;
-        enemySpeed = speed;
-        enemyMaxHealth = health;
-        enemyCurrentHealth = health;
-        enemyPrefab = prefab;
-    }
 
 }
 public class EnemySpawner : MonoBehaviour

@@ -40,7 +40,7 @@ public class EnemyController : MonoBehaviour
                     break;
                 case "rotator":
                     rotate();
-                    shoot(0);
+                    shoot(4);
                     break;
             }
             // if(GetComponent<EnemyAttributes>().enemyType == "basic") {
@@ -50,7 +50,7 @@ public class EnemyController : MonoBehaviour
     }
      void OnTriggerEnter(Collider collision) {
         //if an enemy detects a collision with a bullet, inflict damage by subtracting class info.
-        if((collision.CompareTag("Bullets") || collision.CompareTag ("Bullets_Reflect")) && canTakeDamage) {
+        if((collision.CompareTag("Bullets") || collision.CompareTag ("Bullets_Reflect")) && canTakeDamage && collision.gameObject.GetComponent<bulletAttributes>().spawnedByPlayer == true) {
             // print("Bullet Damage [Before]: " + collision.gameObject.GetComponent<bulletAttributes>().bulletDamage);
             // print("Current Health [Before]: " + gameObject.GetComponent<EnemyAttributes>().enemyCurrentHealth);
             gameObject.GetComponent<EnemyAttributes>().enemyCurrentHealth -= collision.gameObject.GetComponent<bulletAttributes>().bulletDamage;
@@ -144,8 +144,8 @@ public class EnemyController : MonoBehaviour
     }
     private void shoot(int bulletType){
         if(canShoot){
-            bulletGenerator.instantiateBullet(bulletInfo.bullets[bulletType], 1f, 1f, transform, transform.rotation);
-            StartCoroutine(shootBulletCooldown());
+            bulletGenerator.instantiateBullet(bulletInfo.bullets[bulletType], 1f, 1f, transform, transform.rotation, false);
+            StartCoroutine(shootBulletCooldown(bulletType));
         }
     }
     private void rotate(){  
@@ -153,12 +153,12 @@ public class EnemyController : MonoBehaviour
     }
     private void sprayNoCooldown(int bulletType){
         if(canShoot){
-            bulletGenerator.instantiateBullet(bulletInfo.bullets[bulletType], 1f, 1f, transform, transform.rotation);
+            bulletGenerator.instantiateBullet(bulletInfo.bullets[bulletType], 1f, 1f, transform, transform.rotation, false);
         }
     }
-    IEnumerator shootBulletCooldown(){
+    IEnumerator shootBulletCooldown(int bulletType){
         canShoot = false;
-        yield return new WaitForSeconds(.4f);
+        yield return new WaitForSeconds(bulletInfo.bulletCooldowns[bulletType]);
         canShoot = true;
     }
     IEnumerator revolveChangeDirCooldown(bool canChangeDir){

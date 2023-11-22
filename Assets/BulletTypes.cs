@@ -4,10 +4,10 @@ using UnityEngine;
 using UnityEditor;
 
 public class bulletInfo {
-    public static string[] bullets = {"basic", "fast", "reflect", "spread"};
-    public static float[] bulletSpeeds = {10f, 20f, 10f, 8f};
-    public static float[] bulletDamages = {4f, 10f, 8f, 2f};
-    public static float[] bulletCooldowns = {.5f, .1f, 1f, 1.5f};
+    public static string[] bullets = {"basic", "fast", "reflect", "spread", "radial"};
+    public static float[] bulletSpeeds = {10f, 20f, 10f, 8f, 4f};
+    public static float[] bulletDamages = {4f, 10f, 8f, 2f, 2f};
+    public static float[] bulletCooldowns = {.5f, 1.2f, 1f, 1.5f, 1.5f};
     public static Vector3 last_velocity;
     public static Dictionary<GameObject, int> collisionCounts = new Dictionary<GameObject, int>();
     public static GameObject[] bulletPrefabs;
@@ -16,6 +16,7 @@ public class bulletInfo {
 public class bulletAttributes : MonoBehaviour {
     [SerializeField] public float bulletSpeed;
     [SerializeField] public float bulletDamage;
+    [SerializeField] public bool spawnedByPlayer;
 }
 public class BulletTypes : MonoBehaviour
 {
@@ -30,18 +31,19 @@ public class BulletTypes : MonoBehaviour
     public BulletTypes(){
 
     }
-    public BulletTypes(float speed, float damage, GameObject prefab, Transform trans, Quaternion rot) {
-            // this.bulletSpeed = speed;
-            // this.bulletDamage = damage;Attributes
+    public BulletTypes(float speed, float damage, GameObject prefab, Transform trans, Quaternion rot, bool whoSpawned) {
             Vector3 bulletSpawn = trans.position + trans.forward * 1.1f;
             Quaternion bulletSpawnQuat = new Quaternion(bulletSpawn.x, bulletSpawn.y, bulletSpawn.z, 0);
 
             // Loop that creates spread type bullets.
             if(prefab == bulletInfo.bulletPrefabs[3]) {
-                CreateSpreadbullet(bulletSpawn, bulletSpawnQuat, prefab, trans, rot, speed, damage);
+                CreateSpreadbullet(bulletSpawn, bulletSpawnQuat, prefab, trans, rot, speed, damage, whoSpawned);
+            }
+            if(prefab == bulletInfo.bulletPrefabs[4]) {
+                CreateRadialBullet(bulletSpawn, bulletSpawnQuat, prefab, trans, rot, speed, damage, whoSpawned);
             }
             else{
-                GameObject bullet = CreateBullet(bulletSpawn, bulletSpawnQuat, prefab, trans, rot, speed, damage);
+                GameObject bullet = CreateBullet(bulletSpawn, bulletSpawnQuat, prefab, trans, rot, speed, damage, whoSpawned);
                     if(prefab == bulletInfo.bulletPrefabs[2]) {
                         bullet.tag = "Bullets_Reflect";
                     }
@@ -50,8 +52,7 @@ public class BulletTypes : MonoBehaviour
         void OnTriggerEnter(Collider collision) {
         //collision cooldown. This removes possibility of multiple registered collisions during 1 event.
         if (!canCollide) return;
-        //handles reflect bullets.
-        // Debug.Log(collision.tag + " At position: " + collision.transform.position);
+        //handles reflect bullets. 3 collisions will cause the bullet to despawn.
         if(gameObject.tag == "Bullets_Reflect" && collision.gameObject.tag == "Wall"){
             Vector3 reflectionDirection = calcReflDir(gameObject.transform.position, collision.transform.forward);
             Reflect(reflectionDirection);
@@ -87,7 +88,7 @@ public class BulletTypes : MonoBehaviour
         canCollide = false;
         Invoke("ResetCollisionCooldown", 0.1f);
     }
-    public void instantiateBullet(string type, float dmgMult, float speedMult, Transform trans, Quaternion rot) {
+    public void instantiateBullet(string type, float dmgMult, float speedMult, Transform trans, Quaternion rot, bool whoSpawned) {
         float dm = dmgMult;
         float sp = speedMult;
         Quaternion rotation = rot;
@@ -95,27 +96,31 @@ public class BulletTypes : MonoBehaviour
             case "basic":
             //basic bullet
                 // Debug.Log("Called Successfully " + bulletPrefabs[0]);
-                BulletTypes newBasic = new BulletTypes((bulletInfo.bulletSpeeds[0]*sp), (bulletInfo.bulletDamages[0]*dm), bulletInfo.bulletPrefabs[0], trans, rotation);
+                BulletTypes newBasic = new BulletTypes((bulletInfo.bulletSpeeds[0]*sp), (bulletInfo.bulletDamages[0]*dm), bulletInfo.bulletPrefabs[0], trans, rotation, whoSpawned);
                 break;
             case "fast":
             //fast bullet
-                BulletTypes newFast = new BulletTypes((bulletInfo.bulletSpeeds[1]*sp), (bulletInfo.bulletDamages[1]*dm), bulletInfo.bulletPrefabs[1], trans, rotation);
+                BulletTypes newFast = new BulletTypes((bulletInfo.bulletSpeeds[1]*sp), (bulletInfo.bulletDamages[1]*dm), bulletInfo.bulletPrefabs[1], trans, rotation, whoSpawned);
                 break;
             case "reflect":
             //reflect bullet
-            BulletTypes newReflect = new BulletTypes((bulletInfo.bulletSpeeds[2]*sp), (bulletInfo.bulletDamages[2]*dm), bulletInfo.bulletPrefabs[2], trans, rotation);
+            BulletTypes newReflect = new BulletTypes((bulletInfo.bulletSpeeds[2]*sp), (bulletInfo.bulletDamages[2]*dm), bulletInfo.bulletPrefabs[2], trans, rotation, whoSpawned);
                 break;
             case "spread":
             //spread bullet
-            BulletTypes newSpread = new BulletTypes((bulletInfo.bulletSpeeds[3]*sp), (bulletInfo.bulletDamages[3]*dm), bulletInfo.bulletPrefabs[3], trans, rotation);
-                break;    
+            BulletTypes newSpread = new BulletTypes((bulletInfo.bulletSpeeds[3]*sp), (bulletInfo.bulletDamages[3]*dm), bulletInfo.bulletPrefabs[3], trans, rotation, whoSpawned);
+                break;  
+            case "radial":
+            //spread bullet
+                BulletTypes newRadial = new BulletTypes((bulletInfo.bulletSpeeds[4]*sp), (bulletInfo.bulletDamages[4]*dm), bulletInfo.bulletPrefabs[4], trans, rotation, whoSpawned); 
+                break;
             default:
                 Debug.Log("Missing Bullet Type");
                 break;
         }
     }
     //Function that creates individual bullets and adds appropriate components.
-    private GameObject CreateBullet(Vector3 bulletSpawn, Quaternion bulletSpawnQuat, GameObject prefab, Transform trans, Quaternion rot, float speed, float damage){
+    private GameObject CreateBullet(Vector3 bulletSpawn, Quaternion bulletSpawnQuat, GameObject prefab, Transform trans, Quaternion rot, float speed, float damage, bool whoSpawned){
         GameObject bullet = Instantiate(prefab, bulletSpawn, rot);
             Rigidbody Rb = bullet.AddComponent<Rigidbody>();
             SphereCollider sc = bullet.GetComponent<SphereCollider>();
@@ -124,6 +129,7 @@ public class BulletTypes : MonoBehaviour
             bullet.AddComponent<bulletAttributes>();
             bullet.GetComponent<bulletAttributes>().bulletSpeed = speed;
             bullet.GetComponent<bulletAttributes>().bulletDamage = damage;
+            bullet.GetComponent<bulletAttributes>().spawnedByPlayer = whoSpawned;
             Rb.constraints = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
             Rb.velocity = bullet.transform.forward * speed;
             Debug.DrawLine(bullet.transform.position, bullet.transform.forward * 3f);
@@ -131,7 +137,7 @@ public class BulletTypes : MonoBehaviour
             return bullet;
     }
     //Function that creates 3 bullets and shoots them at [blank] degree angle relative to forward vector. also adds appropriate components.
-    private void CreateSpreadbullet(Vector3 bulletSpawn, Quaternion bulletSpawnQuat, GameObject prefab, Transform trans, Quaternion rot, float speed, float damage){
+    private void CreateSpreadbullet(Vector3 bulletSpawn, Quaternion bulletSpawnQuat, GameObject prefab, Transform trans, Quaternion rot, float speed, float damage, bool whoSpawned){
         
         float angle = 30f;
         Quaternion rotVectLeft = rot * Quaternion.Euler(0f, angle, 0f);
@@ -147,10 +153,34 @@ public class BulletTypes : MonoBehaviour
             bullet.AddComponent<bulletAttributes>();
             bullet.GetComponent<bulletAttributes>().bulletSpeed = speed;
             bullet.GetComponent<bulletAttributes>().bulletDamage = damage;
+            bullet.GetComponent<bulletAttributes>().spawnedByPlayer = whoSpawned;
             Rb.constraints = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
             Rb.velocity = bullet.transform.forward * speed;
             bulletInfo.last_velocity = Rb.velocity;
             bullet.tag = "Bullets";
+        }
+    }
+    private void CreateRadialBullet(Vector3 bulletSpawn, Quaternion bulletSpawnQuat, GameObject prefab, Transform trans, Quaternion rot, float speed, float damage, bool whoSpawned){
+        float numOfBullets = 8;
+        float radialStep = 360f/numOfBullets;
+        for(int i=0; i<numOfBullets; i++){
+            float angle = i * radialStep;
+            Vector3 direction = Quaternion.Euler(0, angle, 0) * Vector3.forward;
+            GameObject bullet = Instantiate(prefab, bulletSpawn, Quaternion.identity);
+
+            Rigidbody Rb = bullet.AddComponent<Rigidbody>();
+            SphereCollider sc = bullet.GetComponent<SphereCollider>();
+            sc.isTrigger = true;
+            bullet.AddComponent<BulletTypes>();
+            bullet.AddComponent<bulletAttributes>();
+            bullet.GetComponent<bulletAttributes>().bulletSpeed = speed;
+            bullet.GetComponent<bulletAttributes>().bulletDamage = damage;
+            bullet.GetComponent<bulletAttributes>().spawnedByPlayer = whoSpawned;
+            Rb.constraints = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+            Rb.velocity = direction * speed;
+            bulletInfo.last_velocity = Rb.velocity;
+            bullet.tag = "Bullets";
+
         }
     }
     //Math function for bullet reflections upon collision

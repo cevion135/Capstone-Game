@@ -4,31 +4,26 @@ using UnityEngine;
 
 public class BasicMovement : MonoBehaviour
 {
+    [Header("Player Information")]
     [SerializeField] private float movementSpeed;
-    [SerializeField] private float decel;
     [SerializeField] private float dashForce;
-    
     [SerializeField] public static float max_health = 100f;
     [SerializeField] public static float curr_health;
-    [SerializeField] private Transform centerOfPlayer;
-    //public Transform 
     [SerializeField] private Rigidbody rb;
     [SerializeField] private BoxCollider bc;
     [SerializeField] private Camera cam;
-    private LayerMask hitlayer;
-    // private float shootingCooldown = 1f;
-    private BulletTypes bulletGenerator;
-    // private float cooldown = .5f;
-    private float cd_reduction = 1f;
-    private bool canShoot = true;
-    private bool canDash = true;
-    private bool canSwitchBullets = true;
-    private bool canTakeDamage = true;
-
-
-    private float[] playerBulletCooldowns = {.1f, .5f, .2f, .35f};
-    private int selectionIterator = 0;
     [SerializeField] public MeshRenderer meshRenderer;
+
+    [Header("Cooldown Information")]
+    [SerializeField] private bool canShoot = true;
+    [SerializeField] private bool canDash = true;
+    [SerializeField] private bool canSwitchBullets = true;
+    [SerializeField] private bool canTakeDamage = true;
+    [Header("Other Information")]
+    private int selectionIterator = 0;
+    private float cd_reduction = 1f;
+    private BulletTypes bulletGenerator;
+    private float[] playerBulletCooldowns = {.1f, .5f, .2f, .35f};
 
     //private float distanceToCam = 10.0f;
 
@@ -67,7 +62,7 @@ public class BasicMovement : MonoBehaviour
         trackMouse();
         movementStyle();
         if((Input.GetKey("e") && canShoot)) {
-            bulletGenerator.instantiateBullet(bulletInfo.bullets[selectionIterator], 1f, 1f, transform, transform.rotation);
+            bulletGenerator.instantiateBullet(bulletInfo.bullets[selectionIterator], 1f, 1f, transform, transform.rotation, true);
             StartCoroutine(shootBulletCooldown());
         }
         if(Input.GetKey("q") && canSwitchBullets) {
@@ -173,7 +168,7 @@ public class BasicMovement : MonoBehaviour
     }
      void OnTriggerEnter(Collider collision) {
         //if an enemy detects a collision with a bullet, inflict damage by subtracting class info.
-        if((collision.CompareTag("Bullets") || collision.CompareTag ("Bullets_Reflect")) && canTakeDamage) {
+        if((collision.CompareTag("Bullets") || collision.CompareTag ("Bullets_Reflect")) && canTakeDamage && collision.gameObject.GetComponent<bulletAttributes>().spawnedByPlayer == false) {
             // print("Bullet Damage [Before]: " + collision.gameObject.GetComponent<bulletAttributes>().bulletDamage);
             // print("Current Health [Before]: " + gameObject.GetComponent<EnemyAttributes>().enemyCurrentHealth);
             curr_health -= collision.gameObject.GetComponent<bulletAttributes>().bulletDamage;
@@ -206,7 +201,8 @@ public class BasicMovement : MonoBehaviour
     }
     //cycles through array containing all available bullet types.
     void changeBulletType() {
-        if (selectionIterator == bulletInfo.bullets.Length-1){
+        Debug.Log(bulletInfo.bulletPrefabs[4]);
+        if (selectionIterator == 3){
             selectionIterator = 0;
             return;
         }
