@@ -10,7 +10,7 @@ public class BasicMovement : MonoBehaviour
     [SerializeField] public static float max_health = 100f;
     [SerializeField] public static float curr_health;
     [SerializeField] private Rigidbody rb;
-    [SerializeField] private BoxCollider bc;
+    // [SerializeField] private BoxCollider bc;
     [SerializeField] private Camera cam;
     [SerializeField] public MeshRenderer meshRenderer;
 
@@ -46,7 +46,9 @@ public class BasicMovement : MonoBehaviour
     //     spread,
     //     beam
     // }
-
+    private void Awake(){
+    
+    }
     void Start() {
         rb.drag = 1;
         rb.constraints = RigidbodyConstraints.FreezePositionY |
@@ -58,6 +60,7 @@ public class BasicMovement : MonoBehaviour
         Transform child = transform.Find("Player");
         meshRenderer = child.GetComponent<MeshRenderer>();
         spreadValue = (min + max) / 2f;
+        DontDestroyOnLoad(gameObject);
     }
     void FixedUpdate()
     {

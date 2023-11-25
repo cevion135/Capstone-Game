@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.VFX;
+
 
 //This script is attached to all enemies and outlines how they are to behave.
 public class EnemyController : MonoBehaviour
@@ -18,6 +20,9 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private bool canShoot = true;
     [SerializeField] private bool canTakeDamage = true;
     [SerializeField] private bool canChangeDir = true;
+    [Header("Visual Effects")]
+    [SerializeField] private GameObject deathFX;
+
     
     // Start is called before the first frame update
     void Start()
@@ -57,6 +62,7 @@ public class EnemyController : MonoBehaviour
             // print("Bullet Damage [After]: " + collision.gameObject.GetComponent<bulletAttributes>().bulletDamage);
             print("[Damage Inflicted on Enemy] New Health: " + gameObject.GetComponent<EnemyAttributes>().enemyCurrentHealth);
             if(gameObject.GetComponent<EnemyAttributes>().enemyCurrentHealth <= 0) {
+                // playDeathVFX();
                 Destroy(gameObject);
             }
             StartCoroutine(takeDamageCooldown());
@@ -135,6 +141,12 @@ public class EnemyController : MonoBehaviour
 
         transform.RotateAround(playerTransform.position, Vector3.up, speedAndDir * Time.deltaTime);
     }
+    // private void playDeathVFX(){
+    //     if(death != null) {
+    //         deathFX.transform.position = transform.position;
+    //         deathFX.Play();
+    //     }
+    // }
     void OnDrawGizmos(){
         if(playerTransform) {
             Gizmos.color = Color.blue;

@@ -15,6 +15,12 @@ public class CameraController : MonoBehaviour
     [SerializeField] private bool canZoom = true;
     private GameObject[] enemies;
 
+
+    void Awake(){
+        // DontDestroyOnLoad(gameObject);
+        // DontDestroyOnLoad(CameraTwo);
+        // DontDestroyOnLoad(CameraThree);
+    }
     // Start is called before the first frame update
     void Start()
     {
