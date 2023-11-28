@@ -20,8 +20,8 @@ public class bulletAttributes : MonoBehaviour {
 }
 public class BulletTypes : MonoBehaviour
 {
-    // float bulletSpeed;
-    // float bulletDamage;
+    float bulletSpeed;
+    float bulletDamage;
     bool canCollide = true;
 
     void Awake(){

@@ -20,6 +20,7 @@ public class BasicMovement : MonoBehaviour
     [SerializeField] private bool canSwitchBullets = true;
     [SerializeField] private bool canTakeDamage = true;
     [SerializeField] private bool canReflect = true;
+    [SerializeField] private bool canUseBeam = true;
     [Header("Other Information")]
     private int selectionIterator = 0;
     private float cd_reduction = 1f;
@@ -31,6 +32,7 @@ public class BasicMovement : MonoBehaviour
     private float sensitivity = 5f;
     public static float spreadValue;
     private float reflectionAngle = 45f;
+    public static float beamGauge = 0f;
 
 
     //public float turningDelay = 5f;
@@ -86,6 +88,9 @@ public class BasicMovement : MonoBehaviour
             checkForBullet();
             StartCoroutine(reflectionCooldown());
         }
+        if(Input.GetKey(KeyCode.Mouse0) && (beamGauge >= 100f) && canUseBeam) {
+            useBeam();
+        }
     }
     private void checkForBullet(){
         // Debug.Log("Checking for Bullets...");
@@ -104,21 +109,30 @@ public class BasicMovement : MonoBehaviour
 
                 if (bullet != null)
                 {
-                    Debug.Log("Bullet Found!");
+                    // Debug.Log("Bullet Found!");
                     // Reflect the bullet based on the player's forward direction.
                     reflectBullet(bullet, playerForward);
                 }
             }
         }
     }
+    private void useBeam(){
+        Debug.Log("Imagine this is a BIG GIANT BEAM!");
+
+        //reset beam gauge
+        beamGauge = 0f;
+    }
     //function that reflects bullet in direction relative to players forward vector.
     private void reflectBullet(GameObject bullet, Vector3 reflDir){
         //calculate direction.
         Vector3 reflectedDirection = Vector3.Reflect(reflDir, Vector3.up);
-        //assign direction and speed to the bullets rigidbody velocity component.
-        bullet.GetComponent<Rigidbody>().velocity = reflectedDirection * bullet.GetComponent<bulletAttributes>().bulletSpeed;
-        //transfers ownership of bullet from enemy to player.
-        bullet.GetComponent<bulletAttributes>().spawnedByPlayer = !bullet.GetComponent<bulletAttributes>().spawnedByPlayer;
+        //check for null values in rigidbody and bullet speed.
+        if((bullet.GetComponent<Rigidbody>() != null) && (bullet.GetComponent<bulletAttributes>().bulletSpeed != null)) {
+            //assign direction and speed to the bullets rigidbody velocity component.
+            bullet.GetComponent<Rigidbody>().velocity = reflectedDirection * bullet.GetComponent<bulletAttributes>().bulletSpeed;
+            //transfers ownership of bullet from enemy to player.
+            bullet.GetComponent<bulletAttributes>().spawnedByPlayer = !bullet.GetComponent<bulletAttributes>().spawnedByPlayer;
+        }
     }
     // void movementStyle1() {
     //     //movement by individual key inputs
