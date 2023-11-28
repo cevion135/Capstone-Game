@@ -11,6 +11,13 @@ public class GameManager : MonoBehaviour
    }
     void Start()
     {
+        EnemySpawner.createBasicEnemy(new Vector3(-2f,.5f,-10f));  
+        EnemySpawner.createBasicEnemy(new Vector3(31f,.5f,12f)); 
+            // EnemySpawner.createBasicEnemy(new Vector3(8f,.5f,44f)); 
+            // EnemySpawner.createBasicEnemy(new Vector3(8f,.5f,44f));
+            // EnemySpawner.createRevolverEnemy(new Vector3(-13f, .5f, 6f));
+            // EnemySpawner.createRevolverEnemy(new Vector3(-13f, .5f, 6f));
+            // EnemySpawner.createRotatorEnemy(new Vector3(0f, .5f, 0f)); 
     }
 
     // Update is called once per frame

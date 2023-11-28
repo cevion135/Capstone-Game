@@ -19,6 +19,7 @@ public class BasicMovement : MonoBehaviour
     [SerializeField] private bool canDash = true;
     [SerializeField] private bool canSwitchBullets = true;
     [SerializeField] private bool canTakeDamage = true;
+    [SerializeField] private bool canReflect = true;
     [Header("Other Information")]
     private int selectionIterator = 0;
     private float cd_reduction = 1f;
@@ -29,6 +30,7 @@ public class BasicMovement : MonoBehaviour
     private float max = 50f;
     private float sensitivity = 5f;
     public static float spreadValue;
+    private float reflectionAngle = 45f;
 
 
     //public float turningDelay = 5f;
@@ -80,25 +82,43 @@ public class BasicMovement : MonoBehaviour
             dash();
             StartCoroutine(dash());
         }
+        if(Input.GetKey(KeyCode.Mouse1) && canReflect){
+            checkForBullet();
+            StartCoroutine(reflectionCooldown());
+        }
     }
-    IEnumerator dash(){
-        StartCoroutine(dashMeshRenderer());
-        rb.drag = 2;
-        Vector3 currentVelocity = rb.velocity;
-        Debug.Log("Dashing Initiated");
-        canDash = false;
-        Vector3 dashDirection = Quaternion.Euler(0, transform.eulerAngles.y, 0) * Vector3.forward;
-        rb.AddForce(dashDirection*dashForce);
-        yield return new WaitForSeconds(1.5f);
-        canDash = true;
-        rb.drag = 1;
-    }
-    IEnumerator dashMeshRenderer(){
-        yield return new WaitForSeconds(.03f);
-        meshRenderer.enabled = false;
-        yield return new WaitForSeconds(.1f);
-        meshRenderer.enabled = true;
+    private void checkForBullet(){
+        // Debug.Log("Checking for Bullets...");
 
+        //loop that creates a radial spread in front of the player.
+        for(float angle = -reflectionAngle; angle <= reflectionAngle; angle += 5f){
+            //creates a coneshaped raycast to check for bullets.
+            Vector3 playerForward = transform.forward;
+            Vector3 rotatedDir = Quaternion.Euler(0, angle, 0) * playerForward;
+            Debug.DrawRay(transform.position, rotatedDir * 3f, Color.red, 0.1f);
+            RaycastHit[] hits = Physics.RaycastAll(transform.position, rotatedDir, 3f);
+            //if a bullet is detected in spread, send to reflect function.
+            foreach (RaycastHit hit in hits)
+            {
+                GameObject bullet = hit.collider.gameObject;
+
+                if (bullet != null)
+                {
+                    Debug.Log("Bullet Found!");
+                    // Reflect the bullet based on the player's forward direction.
+                    reflectBullet(bullet, playerForward);
+                }
+            }
+        }
+    }
+    //function that reflects bullet in direction relative to players forward vector.
+    private void reflectBullet(GameObject bullet, Vector3 reflDir){
+        //calculate direction.
+        Vector3 reflectedDirection = Vector3.Reflect(reflDir, Vector3.up);
+        //assign direction and speed to the bullets rigidbody velocity component.
+        bullet.GetComponent<Rigidbody>().velocity = reflectedDirection * bullet.GetComponent<bulletAttributes>().bulletSpeed;
+        //transfers ownership of bullet from enemy to player.
+        bullet.GetComponent<bulletAttributes>().spawnedByPlayer = !bullet.GetComponent<bulletAttributes>().spawnedByPlayer;
     }
     // void movementStyle1() {
     //     //movement by individual key inputs
@@ -190,6 +210,25 @@ public class BasicMovement : MonoBehaviour
             StartCoroutine(takeDamageCooldown());
         }
     }
+    IEnumerator dash(){
+        StartCoroutine(dashMeshRenderer());
+        rb.drag = 2;
+        Vector3 currentVelocity = rb.velocity;
+        Debug.Log("Dashing Initiated");
+        canDash = false;
+        Vector3 dashDirection = Quaternion.Euler(0, transform.eulerAngles.y, 0) * Vector3.forward;
+        rb.AddForce(dashDirection*dashForce);
+        yield return new WaitForSeconds(1.5f);
+        canDash = true;
+        rb.drag = 1;
+    }
+    IEnumerator dashMeshRenderer(){
+        yield return new WaitForSeconds(.03f);
+        meshRenderer.enabled = false;
+        yield return new WaitForSeconds(.1f);
+        meshRenderer.enabled = true;
+
+    }
     //places x amount of cooldown time for each individual bullet.
     IEnumerator shootBulletCooldown(){
         canShoot = false;
@@ -202,12 +241,18 @@ public class BasicMovement : MonoBehaviour
         yield return new WaitForSeconds(.3f);
         canSwitchBullets = true;
     }
+    //player grace period after taking damage.
     IEnumerator takeDamageCooldown(){
         canTakeDamage = false;
         meshRenderer.enabled = false;
         yield return new WaitForSeconds(.1f);
         meshRenderer.enabled = true;
         canTakeDamage = true;
+    }
+    IEnumerator reflectionCooldown(){
+        canReflect = false;
+        yield return new WaitForSeconds(1f);
+        canReflect = true;
     }
     //cycles through array containing all available bullet types.
     void changeBulletType() {
