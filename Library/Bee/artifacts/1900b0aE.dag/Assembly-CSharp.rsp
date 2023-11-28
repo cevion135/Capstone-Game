@@ -368,6 +368,8 @@
 "Assets/EnemyController.cs"
 "Assets/EnemySpawner.cs"
 "Assets/GameManager.cs"
+"Assets/MenuManager.cs"
+"Assets/PlatformRotation.cs"
 -langversion:9.0
 
 /deterministic

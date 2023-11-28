@@ -21,7 +21,7 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private bool canTakeDamage = true;
     [SerializeField] private bool canChangeDir = true;
     [Header("Visual Effects")]
-    [SerializeField] private GameObject deathFX;
+    [SerializeField] private ParticleSystem deathFX;
 
     
     // Start is called before the first frame update

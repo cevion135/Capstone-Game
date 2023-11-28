@@ -17,7 +17,7 @@ public class CameraController : MonoBehaviour
 
 
     void Awake(){
-        // DontDestroyOnLoad(gameObject);
+        DontDestroyOnLoad(gameObject);
         // DontDestroyOnLoad(CameraTwo);
         // DontDestroyOnLoad(CameraThree);
     }
