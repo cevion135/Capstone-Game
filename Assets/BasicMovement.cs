@@ -27,6 +27,7 @@ public class BasicMovement : MonoBehaviour
     [SerializeField] private VisualEffect VFX_Beam;
     [Header("Other Information")]
     [SerializeField] public static bool beamActive = false;
+    [SerializeField] private GameObject Reflect_Object;
     private int selectionIterator = 0;
     private float cd_reduction = 1f;
     private BulletTypes bulletGenerator;
@@ -91,8 +92,7 @@ public class BasicMovement : MonoBehaviour
             StartCoroutine(dash());
         }
         if(Input.GetKey(KeyCode.Mouse1) && canReflect){
-            checkForBullet();
-            VFX_Reflect.Play();
+            checkForBullet();      
             StartCoroutine(reflectionCooldown());
         }
         if(Input.GetKey(KeyCode.Mouse0) && (beamGauge >= 10f) && canUseBeam) {
@@ -100,7 +100,10 @@ public class BasicMovement : MonoBehaviour
         }
     }
     private void checkForBullet(){
+        VFX_Reflect.Play();
+        VFX_Reflect.SetFloat("SpeedAndDir", -VFX_Reflect.GetFloat("SpeedAndDir"));
         // Debug.Log("Checking for Bullets...");
+
 
         //loop that creates a radial spread in front of the player.
         for(float angle = -reflectionAngle; angle <= reflectionAngle; angle += 5f){
@@ -126,7 +129,7 @@ public class BasicMovement : MonoBehaviour
         beamActive = true;
         VFX_Beam.Play();
         Debug.Log("Imagine this is a BIG GIANT BEAM!");
-
+        
         //reset beam gauge
         beamGauge = 0f;
         StartCoroutine(waitBeamLength());
@@ -220,6 +223,7 @@ public class BasicMovement : MonoBehaviour
         spreadValue = Mathf.Clamp(spreadValue, min, max);
     }
      void OnTriggerEnter(Collider collision) {
+        Debug.Log(collision);
         //if an enemy detects a collision with a bullet, inflict damage by subtracting class info.
         if((collision.CompareTag("Bullets") || collision.CompareTag ("Bullets_Reflect")) && canTakeDamage && collision.gameObject.GetComponent<bulletAttributes>().spawnedByPlayer == false) {
             // print("Bullet Damage [Before]: " + collision.gameObject.GetComponent<bulletAttributes>().bulletDamage);

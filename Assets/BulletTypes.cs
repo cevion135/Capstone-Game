@@ -4,9 +4,9 @@ using UnityEngine;
 using UnityEditor;
 
 public class bulletInfo {
-    public static string[] bullets = {"basic", "fast", "reflect", "spread", "radial"};
+    public static string[] bullets = {"basic", "fast", "reflect", "spread", "radial", "beam"};
     public static float[] bulletSpeeds = {10f, 20f, 10f, 8f, 4f};
-    public static float[] bulletDamages = {4f, 10f, 8f, 6f, 2f};
+    public static float[] bulletDamages = {4f, 10f, 8f, 6f, 2f, 10f};
     public static float[] bulletCooldowns = {.5f, 1.2f, 1f, 1.5f, 1.5f};
     public static Vector3 last_velocity;
     public static Dictionary<GameObject, int> collisionCounts = new Dictionary<GameObject, int>();

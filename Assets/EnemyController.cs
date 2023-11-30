@@ -58,25 +58,33 @@ public class EnemyController : MonoBehaviour
         }
     }
      void OnTriggerEnter(Collider collision) {
+        Debug.Log(collision);
         //if an enemy detects a collision with a bullet, inflict damage by subtracting class info.
         if((collision.CompareTag("Bullets") || collision.CompareTag ("Bullets_Reflect")) && canTakeDamage && collision.gameObject.GetComponent<bulletAttributes>().spawnedByPlayer == true) {
             
             //Subtract bullet damage from enemy.
             gameObject.GetComponent<EnemyAttributes>().enemyCurrentHealth -= collision.gameObject.GetComponent<bulletAttributes>().bulletDamage;
+            // Debug.Log("[Damage Inflicted on Enemy] New Health: " + gameObject.GetComponent<EnemyAttributes>().enemyCurrentHealth);
             //if under 1000, add damage value to the players beam gauge counter.
             if(BasicMovement.beamGauge <= 100f) {
                 BasicMovement.beamGauge += collision.gameObject.GetComponent<bulletAttributes>().bulletDamage;
-                Debug.Log("Beam Gauge Increased to: " + BasicMovement.beamGauge);
+                // Debug.Log("Beam Gauge Increased to: " + BasicMovement.beamGauge);
             }
-            print("[Damage Inflicted on Enemy] New Health: " + gameObject.GetComponent<EnemyAttributes>().enemyCurrentHealth);
-            if(gameObject.GetComponent<EnemyAttributes>().enemyCurrentHealth <= 0) {
-                Destroy(gameObject);
-                GameObject death = Instantiate(deathFX, transform.position, transform.rotation);
-                Destroy(death, 2);
-            }
+        }
+        if(collision.CompareTag("Beam")) {
+            Debug.Log("BEAM IS HITTING THE ENEMY.");
+            gameObject.GetComponent<EnemyAttributes>().enemyCurrentHealth -= bulletInfo.bulletDamages[5];
+            // Debug.Log("[Damage Inflicted on Enemy] New Health: " + gameObject.GetComponent<EnemyAttributes>().enemyCurrentHealth);
+        }
+    
+        if(gameObject.GetComponent<EnemyAttributes>().enemyCurrentHealth <= 0) {
+            Destroy(gameObject);
+            GameObject death = Instantiate(deathFX, transform.position, transform.rotation);
+            Destroy(death, 2);
+        }
             StartCoroutine(takeDamageCooldown());
         }
-    }
+    
     private void lookAndShoot(int bulletType){
         //Vector from Enemy to Player
         Vector3 towardsTarget = playerTransform.position - transform.position;

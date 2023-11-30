@@ -11,6 +11,7 @@ TagManager:
   - Wall
   - Bullets_Reflect
   - Enemy
+  - Beam
   layers:
   - Default
   - TransparentFX

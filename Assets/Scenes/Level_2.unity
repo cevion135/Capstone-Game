@@ -244,7 +244,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh89928
+  m_Name: pb_Mesh46058
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -2268,7 +2268,6 @@ GameObject:
   - component: {fileID: 197719411}
   - component: {fileID: 197719410}
   - component: {fileID: 197719409}
-  - component: {fileID: 197719415}
   m_Layer: 0
   m_Name: Cube (2)
   m_TagString: Wall
@@ -4296,19 +4295,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
---- !u!65 &197719415
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 197719408}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 11.932789, y: 3.3915231, z: 11.9770775}
-  m_Center: {x: -5.9663906, y: 1.3893512, z: -5.9885387}
 --- !u!1 &206159122
 GameObject:
   m_ObjectHideFlags: 0
@@ -4412,7 +4398,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh89810
+  m_Name: pb_Mesh45930
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -4576,7 +4562,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh89954
+  m_Name: pb_Mesh46086
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -4748,7 +4734,6 @@ GameObject:
   - component: {fileID: 342930937}
   - component: {fileID: 342930936}
   - component: {fileID: 342930935}
-  - component: {fileID: 342930941}
   m_Layer: 0
   m_Name: Cylinder (5)
   m_TagString: Wall
@@ -5401,26 +5386,13 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 15
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &342930941
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 342930934}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 5.965925, y: 2.9985642, z: 5.350665}
-  m_Center: {x: 2.9829636, y: 1.4992821, z: -3.0892086}
 --- !u!43 &609931135
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh89914
+  m_Name: pb_Mesh46042
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -5584,7 +5556,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh89858
+  m_Name: pb_Mesh45982
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -5748,7 +5720,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh91896
+  m_Name: pb_Mesh45914
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -5920,7 +5892,6 @@ GameObject:
   - component: {fileID: 739400524}
   - component: {fileID: 739400523}
   - component: {fileID: 739400522}
-  - component: {fileID: 739400528}
   m_Layer: 0
   m_Name: Cylinder (4)
   m_TagString: Wall
@@ -6573,26 +6544,13 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &739400528
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 739400521}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 5.965925, y: 2.9985642, z: 5.350665}
-  m_Center: {x: 2.9829636, y: 1.4992821, z: -3.0892086}
 --- !u!43 &896724479
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh89900
+  m_Name: pb_Mesh46026
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -6853,7 +6811,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh89992
+  m_Name: pb_Mesh46128
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -7017,7 +6975,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh89978
+  m_Name: pb_Mesh46112
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -7303,7 +7261,6 @@ GameObject:
   - component: {fileID: 1489535253}
   - component: {fileID: 1489535252}
   - component: {fileID: 1489535251}
-  - component: {fileID: 1489535257}
   m_Layer: 0
   m_Name: Cylinder (1)
   m_TagString: Wall
@@ -7956,19 +7913,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &1489535257
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1489535250}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 5.965925, y: 2.9985642, z: 5.350665}
-  m_Center: {x: 2.9829636, y: 1.4992821, z: -3.0892086}
 --- !u!1 &1506198518
 GameObject:
   m_ObjectHideFlags: 0
@@ -7983,7 +7927,6 @@ GameObject:
   - component: {fileID: 1506198521}
   - component: {fileID: 1506198520}
   - component: {fileID: 1506198519}
-  - component: {fileID: 1506198525}
   m_Layer: 0
   m_Name: Cube (3)
   m_TagString: Wall
@@ -9873,19 +9816,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &1506198525
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1506198518}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 39.990566, y: 3.2968593, z: 39.970837}
-  m_Center: {x: 20.017496, y: 1.3314519, z: -19.957743}
 --- !u!1 &1543563027
 GameObject:
   m_ObjectHideFlags: 0
@@ -9900,7 +9830,6 @@ GameObject:
   - component: {fileID: 1543563030}
   - component: {fileID: 1543563029}
   - component: {fileID: 1543563028}
-  - component: {fileID: 1543563034}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Wall
@@ -11042,26 +10971,13 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &1543563034
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1543563027}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 99.94145, y: 4.0302305, z: 99.95746}
-  m_Center: {x: 50.09276, y: 1.0706761, z: -50.131958}
 --- !u!43 &1556697300
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh89838
+  m_Name: pb_Mesh45960
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -11330,7 +11246,6 @@ GameObject:
   - component: {fileID: 1660741911}
   - component: {fileID: 1660741910}
   - component: {fileID: 1660741909}
-  - component: {fileID: 1660741915}
   m_Layer: 0
   m_Name: Cube (1)
   m_TagString: Wall
@@ -13358,19 +13273,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &1660741915
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1660741908}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 11.932789, y: 3.3915231, z: 11.9770775}
-  m_Center: {x: -5.9663906, y: 1.3893512, z: -5.9885387}
 --- !u!1 &1827677008
 GameObject:
   m_ObjectHideFlags: 0
@@ -13482,7 +13384,6 @@ GameObject:
   - component: {fileID: 1920126175}
   - component: {fileID: 1920126174}
   - component: {fileID: 1920126173}
-  - component: {fileID: 1920126179}
   m_Layer: 0
   m_Name: Cylinder (2)
   m_TagString: Wall
@@ -14135,19 +14036,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &1920126179
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1920126172}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 5.965925, y: 2.9985642, z: 5.350665}
-  m_Center: {x: 2.9829636, y: 1.4992821, z: -3.0892086}
 --- !u!1 &2133021492
 GameObject:
   m_ObjectHideFlags: 0
@@ -14162,7 +14050,6 @@ GameObject:
   - component: {fileID: 2133021495}
   - component: {fileID: 2133021494}
   - component: {fileID: 2133021493}
-  - component: {fileID: 2133021499}
   m_Layer: 0
   m_Name: Cylinder (3)
   m_TagString: Wall
@@ -14815,16 +14702,3 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &2133021499
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2133021492}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 5.965925, y: 2.9985642, z: 5.350665}
-  m_Center: {x: 2.9829636, y: 1.4992821, z: -3.0892086}
