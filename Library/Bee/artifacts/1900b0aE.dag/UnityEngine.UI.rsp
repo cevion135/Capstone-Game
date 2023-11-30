@@ -339,6 +339,7 @@
 -r:"E:/Unity/Unity Hub/2021.3.24f1/Editor/Data/NetStandard/ref/2.1.0/netstandard.dll"
 -r:"E:/Unity/Unity Hub/2021.3.24f1/Editor/Data/PlaybackEngines/WebGLSupport/UnityEditor.WebGL.Extensions.dll"
 -r:"E:/Unity/Unity Hub/2021.3.24f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll"
+"Library/PackageCache/com.unity.render-pipelines.universal@12.1.11/Editor/ShaderGUI/MaterialAssemblyReference/RawRenderQueue.cs"
 "Library/PackageCache/com.unity.shadergraph@12.1.11/Editor/Generation/Targets/BuiltIn/Editor/ShaderGUI/MaterialAssemblyReference/RawRenderQueue.cs"
 "Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventData/AxisEventData.cs"
 "Library/PackageCache/com.unity.ugui@1.0.0/Runtime/EventSystem/EventData/BaseEventData.cs"

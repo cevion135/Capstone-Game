@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.VFX;
 
 public class CameraController : MonoBehaviour
 {
@@ -14,7 +15,8 @@ public class CameraController : MonoBehaviour
     [SerializeField] private bool isZoomed;
     [SerializeField] private bool canZoom = true;
     private GameObject[] enemies;
-
+    [SerializeField] private VisualEffect VFX_Beam;
+    [SerializeField] private float timeMultiplyer;
 
     void Awake(){
         DontDestroyOnLoad(gameObject);
@@ -38,6 +40,9 @@ public class CameraController : MonoBehaviour
             }
             if(enemies.Length != 0) {
                 trackPlayerAndTargets();
+            }
+            if(BasicMovement.beamActive){
+                cameraShake();
             }
         }
     }
@@ -82,9 +87,25 @@ public class CameraController : MonoBehaviour
         }
         zoom = Mathf.Max(zoom, 0.1f);
     }
+    void cameraShake(){
+        StartCoroutine(ShakeCoroutine());   
+    }
     IEnumerator manualZoomCooldown(){
         canZoom = false;
         yield return new WaitForSeconds(.1f);
         canZoom = true;
+    }
+    IEnumerator ShakeCoroutine(){
+        float shakeDuration = VFX_Beam.GetFloat("BeamDuration"); //make this value the duration of beams.
+        float elapsedTime = 0f;
+        float shakeMagnitude = .007f;
+        //shake camera for set amount of seconds.
+        while(elapsedTime < shakeDuration){
+            Vector3 shakeOffset = transform.position + Random.insideUnitSphere * shakeMagnitude;
+            transform.position = shakeOffset;
+
+            elapsedTime += Time.deltaTime * timeMultiplyer;
+            yield return null;
+        }
     }
 }

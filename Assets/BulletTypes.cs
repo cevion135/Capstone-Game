@@ -16,6 +16,8 @@ public class bulletInfo {
 public class bulletAttributes : MonoBehaviour {
     [SerializeField] public float bulletSpeed;
     [SerializeField] public float bulletDamage;
+    [SerializeField] public float bulletLifespan = 5f;
+    [SerializeField] public float spawnTimer;
     [SerializeField] public bool spawnedByPlayer;
 }
 public class BulletTypes : MonoBehaviour
@@ -27,7 +29,15 @@ public class BulletTypes : MonoBehaviour
     void Awake(){
         bulletInfo.bulletPrefabs = Resources.LoadAll<GameObject>("Bullets");
     }
-
+    // void FixedUpdate(){
+    //     if(gameObject){  
+    //         float spawn = gameObject.GetComponent<bulletAttributes>().spawnTimer;
+    //         float lifespan = gameObject.GetComponent<bulletAttributes>().bulletLifespan;
+    //         if(Time.time - spawn > lifespan){
+    //             Destroy(gameObject);
+    //         }
+    //     }
+    // }
     public BulletTypes(){
 
     }
@@ -130,6 +140,7 @@ public class BulletTypes : MonoBehaviour
             bullet.GetComponent<bulletAttributes>().bulletSpeed = speed;
             bullet.GetComponent<bulletAttributes>().bulletDamage = damage;
             bullet.GetComponent<bulletAttributes>().spawnedByPlayer = whoSpawned;
+            bullet.GetComponent<bulletAttributes>().spawnTimer = Time.time;
             Rb.constraints = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
             Rb.velocity = bullet.transform.forward * speed;
             Debug.DrawLine(bullet.transform.position, bullet.transform.forward * 3f);
@@ -162,6 +173,7 @@ public class BulletTypes : MonoBehaviour
             bullet.GetComponent<bulletAttributes>().bulletSpeed = speed;
             bullet.GetComponent<bulletAttributes>().bulletDamage = damage;
             bullet.GetComponent<bulletAttributes>().spawnedByPlayer = whoSpawned;
+            bullet.GetComponent<bulletAttributes>().spawnTimer = Time.time;
             Rb.constraints = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
             Rb.velocity = bullet.transform.forward * speed;
             bulletInfo.last_velocity = Rb.velocity;
@@ -184,6 +196,7 @@ public class BulletTypes : MonoBehaviour
             bullet.GetComponent<bulletAttributes>().bulletSpeed = speed;
             bullet.GetComponent<bulletAttributes>().bulletDamage = damage;
             bullet.GetComponent<bulletAttributes>().spawnedByPlayer = whoSpawned;
+            bullet.GetComponent<bulletAttributes>().spawnTimer = Time.time;
             Rb.constraints = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
             Rb.velocity = direction * speed;
             bulletInfo.last_velocity = Rb.velocity;
@@ -203,9 +216,7 @@ public class BulletTypes : MonoBehaviour
         Vector3 reflectionDirection = Vector3.Reflect(incidentDirection, surfacePosition);
         return reflectionDirection.normalized;
     }
-    private void ResetCollisionCooldown()
-    {
-        // Debug.Log("Collision Cooldown Set To True!");
+    private void ResetCollisionCooldown(){
         canCollide = true;
     }
 }

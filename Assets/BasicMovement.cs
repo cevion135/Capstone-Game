@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.VFX;
 
 public class BasicMovement : MonoBehaviour
 {
@@ -21,7 +22,11 @@ public class BasicMovement : MonoBehaviour
     [SerializeField] private bool canTakeDamage = true;
     [SerializeField] private bool canReflect = true;
     [SerializeField] private bool canUseBeam = true;
+    [Header("VFX")]
+    [SerializeField] private VisualEffect VFX_Reflect;
+    [SerializeField] private VisualEffect VFX_Beam;
     [Header("Other Information")]
+    [SerializeField] public static bool beamActive = false;
     private int selectionIterator = 0;
     private float cd_reduction = 1f;
     private BulletTypes bulletGenerator;
@@ -65,6 +70,7 @@ public class BasicMovement : MonoBehaviour
         meshRenderer = child.GetComponent<MeshRenderer>();
         spreadValue = (min + max) / 2f;
         DontDestroyOnLoad(gameObject);
+        // VFX_Reflect.SetActive(false);
     }
     void FixedUpdate()
     {
@@ -86,9 +92,10 @@ public class BasicMovement : MonoBehaviour
         }
         if(Input.GetKey(KeyCode.Mouse1) && canReflect){
             checkForBullet();
+            VFX_Reflect.Play();
             StartCoroutine(reflectionCooldown());
         }
-        if(Input.GetKey(KeyCode.Mouse0) && (beamGauge >= 100f) && canUseBeam) {
+        if(Input.GetKey(KeyCode.Mouse0) && (beamGauge >= 10f) && canUseBeam) {
             useBeam();
         }
     }
@@ -105,11 +112,10 @@ public class BasicMovement : MonoBehaviour
             //if a bullet is detected in spread, send to reflect function.
             foreach (RaycastHit hit in hits)
             {
+                //MAKE SURE IT IS ONLY DOING THIS WITH BULLET OBJECTS!!!
                 GameObject bullet = hit.collider.gameObject;
-
                 if (bullet != null)
                 {
-                    // Debug.Log("Bullet Found!");
                     // Reflect the bullet based on the player's forward direction.
                     reflectBullet(bullet, playerForward);
                 }
@@ -117,10 +123,13 @@ public class BasicMovement : MonoBehaviour
         }
     }
     private void useBeam(){
+        beamActive = true;
+        VFX_Beam.Play();
         Debug.Log("Imagine this is a BIG GIANT BEAM!");
 
         //reset beam gauge
         beamGauge = 0f;
+        StartCoroutine(waitBeamLength());
     }
     //function that reflects bullet in direction relative to players forward vector.
     private void reflectBullet(GameObject bullet, Vector3 reflDir){
@@ -267,6 +276,10 @@ public class BasicMovement : MonoBehaviour
         canReflect = false;
         yield return new WaitForSeconds(1f);
         canReflect = true;
+    }
+    IEnumerator waitBeamLength(){
+        yield return new WaitForSeconds(VFX_Beam.GetFloat("BeamDuration")); //MAKE THIS VARIABLE MATCH DURATION IN VFX GRAPH
+        beamActive = false;
     }
     //cycles through array containing all available bullet types.
     void changeBulletType() {

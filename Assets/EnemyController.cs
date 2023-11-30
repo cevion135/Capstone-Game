@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.VFX;
+using UnityEditor;
 
 
 //This script is attached to all enemies and outlines how they are to behave.
@@ -21,7 +22,7 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private bool canTakeDamage = true;
     [SerializeField] private bool canChangeDir = true;
     [Header("Visual Effects")]
-    [SerializeField] private ParticleSystem deathFX;
+    [SerializeField] private GameObject deathFX;
 
     
     // Start is called before the first frame update
@@ -30,11 +31,14 @@ public class EnemyController : MonoBehaviour
         BulletTypes newBullet = new BulletTypes();
         bulletGenerator = newBullet;
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
+        // deathFX = GameObject.Find("ScifiTris_2");
+        deathFX = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/ScifiTris_2.prefab");
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
+        // deathFX.Play();
         if(playerTransform){
             switch(GetComponent<EnemyAttributes>().enemyType) {
                 case "basic":
@@ -66,8 +70,9 @@ public class EnemyController : MonoBehaviour
             }
             print("[Damage Inflicted on Enemy] New Health: " + gameObject.GetComponent<EnemyAttributes>().enemyCurrentHealth);
             if(gameObject.GetComponent<EnemyAttributes>().enemyCurrentHealth <= 0) {
-                // playDeathVFX();
                 Destroy(gameObject);
+                GameObject death = Instantiate(deathFX, transform.position, transform.rotation);
+                Destroy(death, 2);
             }
             StartCoroutine(takeDamageCooldown());
         }
@@ -186,6 +191,10 @@ public class EnemyController : MonoBehaviour
         canTakeDamage = false;
         yield return new WaitForSeconds(.1f);
         canTakeDamage = true;
+    }
+    //gives time to play visual effects before enemy is destroyed.
+    IEnumerator deathVFXCooldown() {
+        yield return new WaitForSeconds(10f);
     }
 }
 
