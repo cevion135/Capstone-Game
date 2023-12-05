@@ -371,14 +371,15 @@
 -r:"Library/Bee/artifacts/1900b0aE.dag/Unity.VSCode.Editor.ref.dll"
 -r:"Library/Bee/artifacts/1900b0aE.dag/UnityEditor.UI.ref.dll"
 -r:"Library/Bee/artifacts/1900b0aE.dag/UnityEngine.UI.ref.dll"
-"Assets/BasicMovement.cs"
-"Assets/BulletTypes.cs"
-"Assets/CameraController.cs"
-"Assets/EnemyController.cs"
-"Assets/EnemySpawner.cs"
 "Assets/GameManager.cs"
-"Assets/MenuManager.cs"
-"Assets/PlatformRotation.cs"
+"Assets/Scripts/BasicMovement.cs"
+"Assets/Scripts/BulletTypes.cs"
+"Assets/Scripts/CameraController.cs"
+"Assets/Scripts/EnemyController.cs"
+"Assets/Scripts/EnemySpawner.cs"
+"Assets/Scripts/MenuManager.cs"
+"Assets/Scripts/PlatformRotation.cs"
+"Assets/Scripts/UI_Overlay.cs"
 -langversion:9.0
 
 /deterministic
