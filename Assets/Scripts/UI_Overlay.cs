@@ -13,6 +13,9 @@ public class UI_Overlay : MonoBehaviour
     public float currentBeam;
     private float lerpVal = 0.05f; 
     // Start is called before the first frame update
+    void Awake(){
+        DontDestroyOnLoad(gameObject);
+    }
     void Start()
     {
         

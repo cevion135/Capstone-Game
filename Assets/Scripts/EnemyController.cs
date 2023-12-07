@@ -9,7 +9,7 @@ using UnityEditor;
 public class EnemyController : MonoBehaviour
 {
     [Header("GameObject Components")]
-    [SerializeField]private BulletTypes bulletGenerator;
+    private BulletTypes bulletGenerator; //DO NOT MAKE THIS SERIALIZEFIELD
     [SerializeField] private Transform playerTransform;
     [Header("Movement Information")]
     [SerializeField] private float radOfSatis = 15f;
@@ -21,9 +21,13 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private bool canShoot = true;
     [SerializeField] private bool canTakeDamage = true;
     [SerializeField] private bool canChangeDir = true;
+    [SerializeField] private bool canTakeBeamDamage = true;
+    [SerializeField] private bool BeamDPS = true;
+    [SerializeField] private bool beamDuration = false;
     [Header("Visual Effects")]
+    [SerializeField] private GameObject DamageIndicatorFX;
     [SerializeField] private GameObject deathFX;
-
+    [SerializeField] private GameObject beamFX;
     
     // Start is called before the first frame update
     void Start()
@@ -33,6 +37,7 @@ public class EnemyController : MonoBehaviour
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
         // deathFX = GameObject.Find("ScifiTris_2");
         deathFX = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/ScifiTris_2.prefab");
+        DamageIndicatorFX = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Damage_Indicator.prefab");
     }
 
     // Update is called once per frame
@@ -58,12 +63,14 @@ public class EnemyController : MonoBehaviour
         }
     }
      void OnTriggerEnter(Collider collision) {
-        Debug.Log(collision.gameObject);
+        // Debug.Log(collision.gameObject);
         //if an enemy detects a collision with a bullet, inflict damage by subtracting class info.
         if((collision.CompareTag("Bullets") || collision.CompareTag ("Bullets_Reflect")) && canTakeDamage && collision.gameObject.GetComponent<bulletAttributes>().spawnedByPlayer == true) {
             
             //Subtract bullet damage from enemy.
             gameObject.GetComponent<EnemyAttributes>().enemyCurrentHealth -= collision.gameObject.GetComponent<bulletAttributes>().bulletDamage;
+            //create and instantiate text damage indicator.
+            createDmgIndicator(collision);
             Debug.Log("[Damage Inflicted on Enemy] New Health: " + gameObject.GetComponent<EnemyAttributes>().enemyCurrentHealth);
             //if under 1000, add damage value to the players beam gauge counter.
             if(BasicMovement.beamGauge <= 100f) {
@@ -71,20 +78,52 @@ public class EnemyController : MonoBehaviour
                 Debug.Log("Beam Gauge Increased to: " + BasicMovement.beamGauge);
             }
         }
-        if(collision.CompareTag("Beam")) {
-            Debug.Log("BEAM IS HITTING THE ENEMY.");
-            gameObject.GetComponent<EnemyAttributes>().enemyCurrentHealth -= bulletInfo.bulletDamages[5];
-            // Debug.Log("[Damage Inflicted on Enemy] New Health: " + gameObject.GetComponent<EnemyAttributes>().enemyCurrentHealth);
+        if(collision.CompareTag("Beam") && canTakeBeamDamage) {
+            Debug.Log("BEAM IS HITTING THE ENEMY: Trigger");
+            StartCoroutine(inflictBeamDamage(collision,3f));
         }
     
         if(gameObject.GetComponent<EnemyAttributes>().enemyCurrentHealth <= 0) {
-            Destroy(gameObject);
-            GameObject death = Instantiate(deathFX, transform.position, transform.rotation);
-            Destroy(death, 2);
+            killEnemy();
         }
             StartCoroutine(takeDamageCooldown());
         }
-    
+    private void createDmgIndicator(Collider collision){
+        Quaternion rot = Quaternion.Euler(90f,0f,0f);
+        GameObject dmgTxt = Instantiate(DamageIndicatorFX, transform.position, rot);
+        if(collision.CompareTag("Beam")){
+        dmgTxt.GetComponent<TextMesh>().text = (bulletInfo.bulletDamages[5]).ToString();   
+        }
+        else{
+            dmgTxt.GetComponent<TextMesh>().text = (collision.gameObject.GetComponent<bulletAttributes>().bulletDamage).ToString();  
+        }
+        if(collision.CompareTag("Beam")){
+            dmgTxt.GetComponent<TextMesh>().color = Color.cyan;
+        }
+        else{
+            switch(collision.gameObject.GetComponent<bulletAttributes>().bullet) {
+                case "basic":
+                    dmgTxt.GetComponent<TextMesh>().color = Color.red;
+                    break;
+                case "fast":
+                    dmgTxt.GetComponent<TextMesh>().color = Color.blue;
+                    break;
+                case "reflect":
+                    dmgTxt.GetComponent<TextMesh>().color = Color.green;
+                    break;
+                case "spread":
+                    dmgTxt.GetComponent<TextMesh>().color = Color.yellow;
+                    break;
+                case "radial":
+                    dmgTxt.GetComponent<TextMesh>().color = Color.magenta;
+                    break;
+                case "beam":
+                    dmgTxt.GetComponent<TextMesh>().color = Color.cyan;
+                    break;
+            }
+        }
+        Destroy(dmgTxt, 2);
+    }
     private void lookAndShoot(int bulletType){
         //Vector from Enemy to Player
         Vector3 towardsTarget = playerTransform.position - transform.position;
@@ -195,11 +234,37 @@ public class EnemyController : MonoBehaviour
         yield return new WaitForSeconds(3f);
         canChangeDir = true;
     }
+    //Creates damage per second loop to harm enemy with beam
+    IEnumerator inflictBeamDamage(Collider collision, float _time){
+        float timeLimit = _time;
+        float timeElapsed = 0f;
+        while(timeElapsed <= timeLimit){
+            createDmgIndicator(collision);
+            gameObject.GetComponent<EnemyAttributes>().enemyCurrentHealth -= bulletInfo.bulletDamages[5];
+            Debug.Log("[Damage Inflicted on Enemy] New Health: " + gameObject.GetComponent<EnemyAttributes>().enemyCurrentHealth);
+            timeElapsed += Time.deltaTime;
+            if(gameObject.GetComponent<EnemyAttributes>().enemyCurrentHealth <= 0){
+                killEnemy();
+            }
+            yield return new WaitForSeconds(.2f);
+        }
+    }
+    //sets loop to duration of bream.
+    public void killEnemy(){
+        Destroy(gameObject);
+        GameObject death = Instantiate(deathFX, transform.position, transform.rotation);
+        Destroy(death, 2);
+    }
+    IEnumerator beamTimeElapsed(){
+        yield return new WaitForSeconds(3f);
+        beamDuration = false;
+    }
     IEnumerator takeDamageCooldown() {
         canTakeDamage = false;
         yield return new WaitForSeconds(.1f);
         canTakeDamage = true;
     }
+    
     //gives time to play visual effects before enemy is destroyed.
     IEnumerator deathVFXCooldown() {
         yield return new WaitForSeconds(10f);

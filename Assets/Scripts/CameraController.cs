@@ -35,12 +35,12 @@ public class CameraController : MonoBehaviour
         if(player) {
             enemies = GameObject.FindGameObjectsWithTag("Enemy");
             // print(enemies.Length);
-            if(enemies.Length == 0) {
+            // if(enemies.Length == 0) {
                 followPlayer();
-            }
-            if(enemies.Length != 0) {
-                trackPlayerAndTargets();
-            }
+            // }
+            // if(enemies.Length != 0) {
+            //     trackPlayerAndTargets();
+            // }
             if(BasicMovement.beamActive){
                 cameraShake();
             }

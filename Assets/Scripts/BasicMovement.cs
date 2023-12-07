@@ -25,14 +25,15 @@ public class BasicMovement : MonoBehaviour
     [Header("VFX")]
     [SerializeField] private VisualEffect VFX_Reflect;
     [SerializeField] private VisualEffect VFX_Beam;
-    [SerializeField] private GameObject VFX_Collision;
+    [SerializeField] private GameObject VFX_BeamCollider;
+    [SerializeField] private GameObject VFX_SparkCollision;
     [SerializeField] private GameObject Reflect_Object;
     [Header("Other Information")]
     [SerializeField] public static bool beamActive = false;
   
     private int selectionIterator = 0;
     private float cd_reduction = 1f;
-    private BulletTypes bulletGenerator;
+    private BulletTypes bulletGenerator; //DO NOT MAKE THIS SERIALIZEFIELD
     private float[] playerBulletCooldowns = {.1f, .5f, .2f, .35f};
 
     private float min = 5f;
@@ -73,13 +74,14 @@ public class BasicMovement : MonoBehaviour
         meshRenderer = child.GetComponent<MeshRenderer>();
         spreadValue = (min + max) / 2f;
         DontDestroyOnLoad(gameObject);
-        // VFX_Reflect.SetActive(false);
+        VFX_BeamCollider.GetComponent<BoxCollider>().enabled = false;
     }
     void FixedUpdate()
     {
         
         trackMouse();
         movementStyle();
+
         if((Input.GetKey("e") && canShoot)) {
             bulletGenerator.instantiateBullet(bulletInfo.bullets[selectionIterator], 1f, 1f, transform, transform.rotation, true);
             StartCoroutine(shootBulletCooldown());
@@ -129,7 +131,10 @@ public class BasicMovement : MonoBehaviour
     }
     private void useBeam(){
         beamActive = true;
+        
         VFX_Beam.Play();
+        VFX_BeamCollider.GetComponent<BoxCollider>().enabled = true;
+        VFX_BeamCollider.GetComponent<Animation>().Play("BeamCollider");
         Debug.Log("Imagine this is a BIG GIANT BEAM!");
         
         //reset beam gauge
@@ -242,7 +247,7 @@ public class BasicMovement : MonoBehaviour
     void OnCollisionEnter(Collision col){
         if(col.gameObject.CompareTag("Wall")){
             Debug.Log("Collision with WALL");
-            GameObject sparks = Instantiate(VFX_Collision, transform.position, transform.rotation);
+            GameObject sparks = Instantiate(VFX_SparkCollision, transform.position, transform.rotation);
             sparks.transform.localScale = new Vector3(0.1f, 0f, 0.1f);
             Destroy(sparks, 2);
         }
@@ -294,6 +299,7 @@ public class BasicMovement : MonoBehaviour
     IEnumerator waitBeamLength(){
         yield return new WaitForSeconds(VFX_Beam.GetFloat("BeamDuration")); //MAKE THIS VARIABLE MATCH DURATION IN VFX GRAPH
         beamActive = false;
+        VFX_BeamCollider.GetComponent<BoxCollider>().enabled = false;
     }
     //cycles through array containing all available bullet types.
     void changeBulletType() {

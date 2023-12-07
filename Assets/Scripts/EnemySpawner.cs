@@ -40,11 +40,12 @@ public class EnemySpawner : MonoBehaviour
         Rigidbody rb = enemy.GetComponent<Rigidbody>();
         rb.constraints = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
         enemy.AddComponent<EnemyController>();
+        DontDestroyOnLoad(enemy);
         //IMPORTANT:Remove child object tagging when enemy models are added.
         Transform child = enemy.transform.Find("Enemy");
         if(child != null) {
             // Debug.Log("CHILD ENEMY FOUND");
-            child.gameObject.tag = "Enemy";
+            child.gameObject.tag = "Enemy"; 
         }
         else{
             Debug.Log("child enemy not found");
