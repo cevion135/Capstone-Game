@@ -88,6 +88,7 @@ public class EnemyController : MonoBehaviour
         }
             StartCoroutine(takeDamageCooldown());
         }
+    //function that displays amount of damage on screen that an enemy has taken.
     private void createDmgIndicator(Collider collision){
         Quaternion rot = Quaternion.Euler(90f,0f,0f);
         GameObject dmgTxt = Instantiate(DamageIndicatorFX, transform.position, rot);

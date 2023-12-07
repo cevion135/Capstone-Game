@@ -12,6 +12,8 @@ TagManager:
   - Bullets_Reflect
   - Enemy
   - Beam
+  - Healthpack
+  - DmgUp
   layers:
   - Default
   - TransparentFX

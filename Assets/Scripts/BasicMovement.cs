@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.VFX;
+using TMPro;
 
 public class BasicMovement : MonoBehaviour
 {
@@ -28,7 +29,11 @@ public class BasicMovement : MonoBehaviour
     [SerializeField] private GameObject VFX_BeamCollider;
     [SerializeField] private GameObject VFX_SparkCollision;
     [SerializeField] private GameObject Reflect_Object;
-    [Header("Other Information")]
+    [Header("UI")]
+    [SerializeField] private TextMeshProUGUI UI_SelectedBullet;
+    [SerializeField] private TextMeshProUGUI UI_DamageMultiplier;
+    [Header("Other Bullet Stuff")]
+    [SerializeField] private float damageMutlipler = 1f;
     [SerializeField] public static bool beamActive = false;
   
     private int selectionIterator = 0;
@@ -66,15 +71,23 @@ public class BasicMovement : MonoBehaviour
         rb.drag = 1;
         rb.constraints = RigidbodyConstraints.FreezePositionY |
         RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezeRotationX;
+
         cam = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
+
         BulletTypes newBullet = new BulletTypes();
         bulletGenerator = newBullet;
+
         curr_health = max_health;
         Transform child = transform.Find("Player");
         meshRenderer = child.GetComponent<MeshRenderer>();
         spreadValue = (min + max) / 2f;
         DontDestroyOnLoad(gameObject);
         VFX_BeamCollider.GetComponent<BoxCollider>().enabled = false;
+
+        UI_SelectedBullet.text = "[Basic Bullet]";
+        UI_SelectedBullet.color = Color.red;
+        UI_DamageMultiplier.text = "Dmg: [" + damageMutlipler.ToString() + "x]";
+
     }
     void FixedUpdate()
     {
@@ -83,7 +96,7 @@ public class BasicMovement : MonoBehaviour
         movementStyle();
 
         if((Input.GetKey("e") && canShoot)) {
-            bulletGenerator.instantiateBullet(bulletInfo.bullets[selectionIterator], 1f, 1f, transform, transform.rotation, true);
+            bulletGenerator.instantiateBullet(bulletInfo.bullets[selectionIterator], damageMutlipler, 1f, transform, transform.rotation, true);
             StartCoroutine(shootBulletCooldown());
         }
         if(Input.GetKey("q") && canSwitchBullets) {
@@ -129,13 +142,14 @@ public class BasicMovement : MonoBehaviour
             }
         }
     }
+    //function that handles beam damage and collision.
     private void useBeam(){
         beamActive = true;
         
         VFX_Beam.Play();
         VFX_BeamCollider.GetComponent<BoxCollider>().enabled = true;
         VFX_BeamCollider.GetComponent<Animation>().Play("BeamCollider");
-        Debug.Log("Imagine this is a BIG GIANT BEAM!");
+        // Debug.Log("Imagine this is a BIG GIANT BEAM!");
         
         //reset beam gauge
         beamGauge = 0f;
@@ -233,20 +247,36 @@ public class BasicMovement : MonoBehaviour
         Debug.Log(collision);
         //if an enemy detects a collision with a bullet, inflict damage by subtracting class info.
         if((collision.CompareTag("Bullets") || collision.CompareTag ("Bullets_Reflect")) && canTakeDamage && collision.gameObject.GetComponent<bulletAttributes>().spawnedByPlayer == false) {
-            // print("Bullet Damage [Before]: " + collision.gameObject.GetComponent<bulletAttributes>().bulletDamage);
-            // print("Current Health [Before]: " + gameObject.GetComponent<EnemyAttributes>().enemyCurrentHealth);
             curr_health -= collision.gameObject.GetComponent<bulletAttributes>().bulletDamage;
-            // print("Bullet Damage [After]: " + collision.gameObject.GetComponent<bulletAttributes>().bulletDamage);
-            print("[Damage Inflicted on Player] New Health: " + curr_health);
+            // Debug.Log("[Damage Inflicted on Player] New Health: " + curr_health);
+            //Kill player if health is below 0.
             if(curr_health <= 0) {
                 Destroy(gameObject);
             }
             StartCoroutine(takeDamageCooldown());
         }
+
+        //pick up healthpack and destroy game object.
+        if(collision.CompareTag("Healthpack") && !collision.transform.IsChildOf(transform)) {
+            if(curr_health + 30 > max_health){
+                curr_health = 100f;
+            }
+            if(curr_health + 30 < max_health){
+                curr_health += 30f;
+            }
+            Debug.Log("HEALTHPACK ACQUIRED!... +30 HEALTH");
+            Destroy(collision.gameObject);
+        }
+
+        //pick up damage multipler and destroy game object.
+        if(collision.CompareTag("DmgUp") && !collision.transform.IsChildOf(transform)){
+            Destroy(collision.gameObject);
+            StartCoroutine(ApplyDmgMultiplier());
+        }
     }
     void OnCollisionEnter(Collision col){
         if(col.gameObject.CompareTag("Wall")){
-            Debug.Log("Collision with WALL");
+            // Debug.Log("Collision with WALL");
             GameObject sparks = Instantiate(VFX_SparkCollision, transform.position, transform.rotation);
             sparks.transform.localScale = new Vector3(0.1f, 0f, 0.1f);
             Destroy(sparks, 2);
@@ -301,14 +331,44 @@ public class BasicMovement : MonoBehaviour
         beamActive = false;
         VFX_BeamCollider.GetComponent<BoxCollider>().enabled = false;
     }
+    //Applies damage bonus to player after buff is picked up.
+    IEnumerator ApplyDmgMultiplier(){
+        damageMutlipler += 0.5f;
+        UI_DamageMultiplier.text = "Dmg: [" + damageMutlipler.ToString() + "x]";
+         yield return new WaitForSeconds(15f);
+        damageMutlipler -= 0.5f;
+        UI_DamageMultiplier.text = "Dmg: [" + damageMutlipler.ToString() + "x]";
+
+    }
     //cycles through array containing all available bullet types.
     void changeBulletType() {
         Debug.Log(bulletInfo.bulletPrefabs[4]);
-        if (selectionIterator == 3){
-            selectionIterator = 0;
-            return;
-        }
+        // if (selectionIterator == 3){
+        //     selectionIterator = 0;
+        // }
         selectionIterator++;
+        if (selectionIterator >= 4){
+            selectionIterator = 0;
+        }
+        //changes on screen text depending on selected bullet.
+        switch(selectionIterator){
+            case 0:
+               UI_SelectedBullet.text = "[Basic Bullet]";
+               UI_SelectedBullet.color = Color.red;
+                break;
+            case 1:
+                UI_SelectedBullet.text = "[Fast Bullet]";
+                UI_SelectedBullet.color = Color.blue;
+                break;
+            case 2:
+                UI_SelectedBullet.text = "[Reflect Bullet]";
+                UI_SelectedBullet.color = Color.green;
+                break;
+            case 3: 
+                UI_SelectedBullet.text = "[Spread Bullet]";
+                UI_SelectedBullet.color = Color.yellow;
+                break;
+        }
         Debug.Log("Bullet Type #" + selectionIterator + " Associating Bullet: " + bulletInfo.bullets[selectionIterator]);
     }
 }
