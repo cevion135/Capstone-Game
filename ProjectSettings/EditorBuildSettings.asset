@@ -23,7 +23,31 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Level_4.unity
     guid: 4bc54fd9f60ddfe4eb5baa4414e8ebd0
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Level_5.unity
     guid: f16e6a61451763247b3b4d783c9b6ec0
+  - enabled: 1
+    path: Assets/Scenes/YouWin.unity
+    guid: b2e3542aa36b1b94a8d48634ad486277
+  - enabled: 1
+    path: Assets/Scenes/Death.unity
+    guid: 0a253ccd0778edd4c953421230be0e56
+  - enabled: 1
+    path: Assets/Scenes/Tutorial06.unity
+    guid: 7e2c101a26395f34caf1470c92bae3c7
+  - enabled: 1
+    path: Assets/Scenes/Tutorial02.unity
+    guid: c6d2b328fab178a4d9eba1a3b83fba2d
+  - enabled: 1
+    path: Assets/Scenes/Tutorial03.unity
+    guid: 9354948136e87d1429ca446e41a7d6bd
+  - enabled: 1
+    path: Assets/Scenes/Tutorial04.unity
+    guid: 9a5059f4bc9b4be4d89ffc5ccd2a5411
+  - enabled: 1
+    path: Assets/Scenes/Tutorial05.unity
+    guid: baff0dabfeb790e479b58bc81ff8d08e
+  - enabled: 1
+    path: Assets/Scenes/Tutorial01.unity
+    guid: 2572010f4191e7a469964fb5d08dd08b
   m_configObjects: {}

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.VFX;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class BasicMovement : MonoBehaviour
 {
@@ -35,7 +36,7 @@ public class BasicMovement : MonoBehaviour
     [Header("Other Bullet Stuff")]
     [SerializeField] private float damageMutlipler = 1f;
     [SerializeField] public static bool beamActive = false;
-  
+    public static int mostRecentScene;
     private int selectionIterator = 0;
     private float cd_reduction = 1f;
     private BulletTypes bulletGenerator; //DO NOT MAKE THIS SERIALIZEFIELD
@@ -87,6 +88,8 @@ public class BasicMovement : MonoBehaviour
         UI_SelectedBullet.text = "[Basic Bullet]";
         UI_SelectedBullet.color = Color.red;
         UI_DamageMultiplier.text = "Dmg: [" + damageMutlipler.ToString() + "x]";
+        
+        // Time.timeScale = 0.2f;
 
     }
     void FixedUpdate()
@@ -251,7 +254,10 @@ public class BasicMovement : MonoBehaviour
             // Debug.Log("[Damage Inflicted on Player] New Health: " + curr_health);
             //Kill player if health is below 0.
             if(curr_health <= 0) {
-                Destroy(gameObject);
+                // Destroy(gameObject);
+                GameManager.killAllEnemies();
+                mostRecentScene = SceneManager.GetActiveScene().buildIndex;
+                SceneManager.LoadScene(7);
             }
             StartCoroutine(takeDamageCooldown());
         }

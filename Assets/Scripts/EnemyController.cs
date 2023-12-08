@@ -36,6 +36,8 @@ public class EnemyController : MonoBehaviour
         bulletGenerator = newBullet;
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
         // deathFX = GameObject.Find("ScifiTris_2");
+        // deathFX = GameObject.FindGameObjectWithTag("FX_Death");
+        // DamageIndicatorFX = GameObject.FindGameObjectWithTag("FX_DmgInd");
         deathFX = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/VFX/ScifiTris_2.prefab");
         DamageIndicatorFX = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Damage_Indicator.prefab");
     }
@@ -91,6 +93,7 @@ public class EnemyController : MonoBehaviour
     //function that displays amount of damage on screen that an enemy has taken.
     private void createDmgIndicator(Collider collision){
         Quaternion rot = Quaternion.Euler(90f,0f,0f);
+        // GameObject dmgTxt = Instantiate(Resources.Load("Damage_Indicator", typeof(GameObject))) as GameObject;
         GameObject dmgTxt = Instantiate(DamageIndicatorFX, transform.position, rot);
         if(collision.CompareTag("Beam")){
         dmgTxt.GetComponent<TextMesh>().text = (bulletInfo.bulletDamages[5]).ToString();   

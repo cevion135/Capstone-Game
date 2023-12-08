@@ -14,6 +14,9 @@ TagManager:
   - Beam
   - Healthpack
   - DmgUp
+  - FX_Death
+  - FX_DmgInd
+  - Fx_DmgInd
   layers:
   - Default
   - TransparentFX
