@@ -7,6 +7,8 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] private Transform playerTransform;
     [SerializeField] private bool canChangeScene = false;
+    [SerializeField] public static bool stillAlive = true;
+
    void Awake(){
         DontDestroyOnLoad(gameObject);
    }
@@ -20,10 +22,10 @@ public class GameManager : MonoBehaviour
     {
         GameObject[] numOfEnemies = GameObject.FindGameObjectsWithTag("Enemy");
         // Debug.Log(numOfEnemies.Length);
-        if(numOfEnemies.Length == 0){
+        if(numOfEnemies.Length == 0 && isPlayerAlive()){
             canChangeScene = true;
         }
-        if(Input.GetKeyDown(KeyCode.Z)){
+        if(!isPlayerAlive()){
             killAllEnemies();
         }
         // if(numOfEnemies.Length == 0 && SceneManager.GetActiveScene().buildIndex == 5){
@@ -44,8 +46,8 @@ public class GameManager : MonoBehaviour
     public void youWin(){
         Debug.Log("CONGRATULATIONS, YOU BEAT THE GAME!");
     }
-    public void queueTransition() {
-
+    public bool isPlayerAlive(){
+        return BasicMovement.playerStatus;
     }
     public void loadNextScene(){
         StartCoroutine(TwoSecCooldown());
@@ -68,7 +70,7 @@ public class GameManager : MonoBehaviour
                     break;
             }
         }
-
+        canChangeScene = false;
     }
     public void loadPreviousScene(){
          int curSceneIndex = SceneManager.GetActiveScene().buildIndex;
@@ -216,8 +218,8 @@ public class GameManager : MonoBehaviour
     }
     public static void killAllEnemies(){
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
-
-        foreach (GameObject enemy in enemies)
+        var objectsToDestroy = new System.Collections.Generic.List<GameObject>(enemies);
+        foreach (GameObject enemy in objectsToDestroy)
         {
             print(enemy + " HAS NOW BEEN DESTROYED");
             Destroy(enemy);

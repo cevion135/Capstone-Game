@@ -16,6 +16,7 @@ public class BasicMovement : MonoBehaviour
     // [SerializeField] private BoxCollider bc;
     [SerializeField] private Camera cam;
     [SerializeField] public MeshRenderer meshRenderer;
+    [SerializeField] public static bool playerStatus = true;
 
     [Header("Cooldown Information")]
     [SerializeField] private bool canShoot = true;
@@ -135,12 +136,14 @@ public class BasicMovement : MonoBehaviour
             //if a bullet is detected in spread, send to reflect function.
             foreach (RaycastHit hit in hits)
             {
+                if(hit.collider.gameObject.tag == "Bullets" || hit.collider.gameObject.tag == "Bullets_Reflect"){
                 //MAKE SURE IT IS ONLY DOING THIS WITH BULLET OBJECTS!!!
-                GameObject bullet = hit.collider.gameObject;
-                if (bullet != null)
-                {
-                    // Reflect the bullet based on the player's forward direction.
-                    reflectBullet(bullet, playerForward);
+                    GameObject bullet = hit.collider.gameObject;
+                    if (bullet != null)
+                    {
+                        // Reflect the bullet based on the player's forward direction.
+                        reflectBullet(bullet, playerForward);
+                    }
                 }
             }
         }
@@ -195,42 +198,7 @@ public class BasicMovement : MonoBehaviour
 
         rb.AddForce(acceleration * Time.deltaTime);
     }
-    // void trackMouse() {
-
-        //SEMI WORKING
-        // Ray cameraRay = cam.ScreenPointToRay(Input.mousePosition);
-        // Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
-        // float rayLength;
-
-        // if (groundPlane.Raycast(cameraRay, out rayLength)) {
-            // Vector3 pointToLook = cameraRay.GetPoint(rayLength);
-            // Vector3 towardsMouse = pointToLook - centerOfPlayer.position;
-            // towardsMouse.y = 0;
-            // towardsMouse = towardsMouse.normalized;
-            // Quaternion targetRotation = Quaternion.LookRotation (towardsMouse);
-            // Debug.DrawLine(cameraRay.origin, pointToLook, Color.blue);
-            // Debug.DrawLine(centerOfPlayer.position, towardsMouse, Color.red);
-            // Debug.Log("Casting BLUE Ray: " + pointToLook);
-            // Debug.Log("Casting RED Ray: " + towardsMouse);
-            // Debug.Log("Printing Look Rotation: " + towardsMouse);
-            // Debug.Log("Printing Target Rotation: " + targetRotation);
-            // centerOfPlayer.rotation = Quaternion.Slerp(centerOfPlayer.rotation, targetRotation, Time.deltaTime * 5f);
-        // }
-        
-        
-
-
-        // Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        // RaycastHit hit;
-        // if (Physics.Raycast(ray, out hit)) {
-        //     Vector3 mousePosition = hit.point;
-        //     Vector3 direction = mousePosition - centerOfPlayer.position;
-        //     // direction.y = 0;
-        //     Quaternion targetRotation = Quaternion.LookRotation(direction);
-        //     centerOfPlayer.rotation = Quaternion.Slerp(centerOfPlayer.rotation, targetRotation, 1f * Time.deltaTime);
-        // }
-        // return;
-    // }
+    
     void trackMouse(){
         //Section for character rotation
        Ray camRay = cam.ScreenPointToRay(Input.mousePosition);
@@ -254,8 +222,10 @@ public class BasicMovement : MonoBehaviour
             // Debug.Log("[Damage Inflicted on Player] New Health: " + curr_health);
             //Kill player if health is below 0.
             if(curr_health <= 0) {
-                // Destroy(gameObject);
+                Destroy(gameObject);
                 GameManager.killAllEnemies();
+                playerStatus = false;
+
                 mostRecentScene = SceneManager.GetActiveScene().buildIndex;
                 SceneManager.LoadScene(7);
             }
@@ -376,5 +346,11 @@ public class BasicMovement : MonoBehaviour
                 break;
         }
         Debug.Log("Bullet Type #" + selectionIterator + " Associating Bullet: " + bulletInfo.bullets[selectionIterator]);
+    }
+
+    public static void reset(){
+        curr_health = max_health;
+        // gameObject.transform.position = new Vector3(0f, .5f, 0f);
+        playerStatus = true;
     }
 }

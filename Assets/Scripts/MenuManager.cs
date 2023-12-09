@@ -15,6 +15,12 @@ public class MenuManager : MonoBehaviour
         }
         Debug.Log("No Scene Found");
     }
+    public void died(){
+        SceneManager.LoadScene("TitleScreen");
+        BasicMovement.reset();
+        Destroy(GameObject.FindGameObjectWithTag("MainCamera"));
+        Debug.Log("Main Camera... supposedly Destoryed");
+    }
     public void getMostRecentScene(){
         recentScene = BasicMovement.mostRecentScene;
     }
